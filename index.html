@@ -1,471 +1,470 @@
-‎<!DOCTYPE html>
-‎<html lang="en">
-‎<head>
-‎    <meta charset="UTF-8">
-‎    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-‎    <title>Bsk Home Needs</title>
-‎    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- For icons -->
-‎    <style>
-‎        body {
-‎            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-‎            margin: 0;
-‎            padding: 0;
-‎            background: linear-gradient(135deg, #f4f4f4 0%, #e8f5e8 100%);
-‎            color: #333;
-‎            overflow-x: hidden;
-‎        }
-‎        .page {
-‎            display: none;
-‎        }
-‎        .page.active {
-‎            display: block;
-‎        }
-‎        header {
-‎            background: linear-gradient(135deg, #4CAF50 0%, #FF9800 100%);
-‎            color: white;
-‎            text-align: center;
-‎            padding: 30px 20px;
-‎            animation: fadeIn 1.5s ease-in;
-‎            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-‎        }
-‎        header h1 {
-‎            margin: 0;
-‎            font-size: 2.5em;
-‎        }
-‎        header p {
-‎            font-size: 1.2em;
-‎        }
-‎        footer {
-‎            background: linear-gradient(135deg, #FF9800 0%, #4CAF50 100%);
-‎            color: white;
-‎            text-align: center;
-‎            padding: 20px;
-‎            position: fixed;
-‎            bottom: 0;
-‎            width: 100%;
-‎            display: flex;
-‎            justify-content: space-around;
-‎            align-items: center;
-‎            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
-‎        }
-‎        footer button {
-‎            background: none;
-‎            border: none;
-‎            color: white;
-‎            font-size: 1.5em;
-‎            cursor: pointer;
-‎            transition: transform 0.3s ease;
-‎            position: relative;
-‎        }
-‎        footer button:hover {
-‎            transform: scale(1.2);
-‎        }
-‎        footer button::after {
-‎            content: attr(data-tooltip);
-‎            position: absolute;
-‎            bottom: 100%;
-‎            left: 50%;
-‎            transform: translateX(-50%);
-‎            background: rgba(0,0,0,0.8);
-‎            color: white;
-‎            padding: 5px 10px;
-‎            border-radius: 5px;
-‎            font-size: 0.8em;
-‎            white-space: nowrap;
-‎            opacity: 0;
-‎            pointer-events: none;
-‎            transition: opacity 0.3s ease;
-‎        }
-‎        footer button:hover::after {
-‎            opacity: 1;
-‎        }
-‎        .container {
-‎            max-width: 1200px;
-‎            margin: 20px auto;
-‎            padding: 20px;
-‎            padding-bottom: 100px; /* Space for fixed footer */
-‎        }
-‎        .search-bar {
-‎            margin-bottom: 20px;
-‎            text-align: center;
-‎        }
-‎        .search-bar input {
-‎            padding: 10px;
-‎            width: 300px;
-‎            border: 2px solid #ddd;
-‎            border-radius: 25px;
-‎            font-size: 1em;
-‎        }
-‎        .products {
-‎            display: grid;
-‎            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-‎            gap: 25px;
-‎        }
-‎        .product-card {
-‎            background: white;
-‎            border-radius: 12px;
-‎            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-‎            padding: 25px;
-‎            text-align: center;
-‎            transition: transform 0.4s ease, box-shadow 0.4s ease;
-‎            animation: fadeInUp 1s ease-out;
-‎            position: relative;
-‎            overflow: hidden;
-‎        }
-‎        .product-card::before {
-‎            content: '';
-‎            position: absolute;
-‎            top: 0;
-‎            left: -100%;
-‎            width: 100%;
-‎            height: 100%;
-‎            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
-‎            transition: left 0.5s ease;
-‎        }
-‎        .product-card:hover::before {
-‎            left: 100%;
-‎        }
-‎        .product-card:hover {
-‎            transform: translateY(-8px) scale(1.02);
-‎            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-‎        }
-‎        .product-card img {
-‎            max-width: 100%;
-‎            height: 200px;
-‎            object-fit: cover;
-‎            border-radius: 8px;
-‎            transition: transform 0.3s ease;
-‎        }
-‎        .product-card:hover img {
-‎            transform: rotate(2deg) scale(1.05);
-‎        }
-‎        .product-card i {
-‎            font-size: 2em;
-‎            color: #4CAF50;
-‎            margin-bottom: 10px;
-‎        }
-‎        button {
-‎            background: linear-gradient(135deg, #4CAF50 0%, #FF9800 100%);
-‎            color: white;
-‎            border: none;
-‎            padding: 12px 25px;
-‎            border-radius: 25px;
-‎            cursor: pointer;
-‎            transition: all 0.3s ease;
-‎            font-weight: bold;
-‎            animation: bounce 2s infinite;
-‎        }
-‎        button:hover {
-‎            transform: scale(1.1);
-‎            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-‎        }
-‎        .remove-btn {
-‎            background: #f44336;
-‎            margin-top: 10px;
-‎        }
-‎        .remove-btn:hover {
-‎            background: #d32f2f;
-‎        }
-‎        .back-btn {
-‎            background: #2196F3;
-‎            margin: 20px 0;
-‎        }
-‎        .back-btn:hover {
-‎            background: #1976D2;
-‎        }
-‎        @keyframes bounce {
-‎            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-‎            40% { transform: translateY(-5px); }
-‎            60% { transform: translateY(-3px); }
-‎        }
-‎        .cart-page, .contact-page, .admin-page {
-‎            padding: 50px 20px;
-‎            text-align: center;
-‎        }
-‎        .cart-items {
-‎            margin: 20px 0;
-‎        }
-‎        .cart-item {
-‎            display: flex;
-‎            justify-content: space-between;
-‎            align-items: center;
-‎            padding: 10px;
-‎            border-bottom: 1px solid #ddd;
-‎        }
-‎        .admin-panel {
-‎            text-align: left;
-‎            max-width: 800px;
-‎            margin: 0 auto;
-‎        }
-‎        .admin-panel .product-list, .admin-panel .order-list {
-‎            max-height: 300px;
-‎            overflow-y: auto;
-‎        }
-‎        .admin-panel .product-item, .admin-panel .order-item {
-‎            display: flex;
-‎            justify-content: space-between;
-‎            align-items: center;
-‎            padding: 10px;
-‎            border-bottom: 1px solid #ddd;
-‎        }
-‎        @keyframes fadeIn {
-‎            from { opacity: 0; }
-‎            to { opacity: 1; }
-‎        }
-‎        @keyframes fadeInUp {
-‎            from { opacity: 0; transform: translateY(30px); }
-‎            to { opacity: 1; transform: translateY(0); }
-‎        }
-‎    </style>
-‎</head>
-‎<body>
-‎    <div id="homePage" class="page active">
-‎        <header>
-‎            <h1><i class="fas fa-truck"></i> Bsk Home Needs</h1>
-‎            <p>Fresh groceries delivered straight to your doorstep with love!</p>
-‎        </header>
-‎        <div class="container">
-‎            <div class="search-bar">
-‎                <input type="text" id="searchInput" placeholder="Search for products...">
-‎            </div>
-‎            <h2><i class="fas fa-shopping-cart"></i> Our Products</h2>
-‎            <div class="products" id="productsList"></div>
-‎            <div id="noResults" style="display: none; text-align: center; font-size: 1.2em; color: #f44336;">Product not found</div>
-‎        </div>
-‎    </div>
-‎
-‎    <div id="contactPage" class="page">
-‎        <div class="container">
-‎            <h1>Contact Us</h1>
-‎            <p>Email: bskhomeneeds@gmail.com</p>
-‎            <button class="back-btn" onclick="showPage('homePage')">Back to Home Page</button>
-‎        </div>
-‎    </div>
-‎
-‎    <div id="cartPage" class="page">
-‎        <div class="container">
-‎            <h1><i class="fas fa-shopping-cart"></i> Your Cart</h1>
-‎            <div class="cart-items" id="cartItems"></div>
-‎            <p>Total: ₹<span id="cartTotal">0</span></p>
-‎            <button onclick="checkout()">Checkout</button>
-‎            <button class="back-btn" onclick="showPage('homePage')">Back to Home Page</button>
-‎        </div>
-‎    </div>
-‎
-‎    <div id="adminPage" class="page">
-‎        <div class="container">
-‎            <h1>Admin Login</h1>
-‎            <button onclick="adminLogin()">Enter Password</button>
-‎            <div id="adminPanel" style="display: none;">
-‎                <h2><i class="fas fa-tools"></i> Admin Panel</h2>
-‎                <button onclick="addProduct()">Add New Product</button>
-‎                <h3>Current Products:</h3>
-‎                <div class="product-list" id="adminProductList"></div>
-‎                <h3>Orders:</h3>
-‎                <div class="order-list" id="adminOrderList"></div>
-‎            </div>
-‎            <button class="back-btn" onclick="showPage('homePage')">Back to Home Page</button>
-‎        </div>
-‎    </div>
-‎
-‎    <footer>
-‎        <button id="contactBtn" data-tooltip="Go to contact page">✉️</button>
-‎        <button id="cartBtn" data-tooltip="Go to cart page">🛒</button>
-‎        <button id="adminLoginBtn" data-tooltip="Go to admin page">👤</button>
-‎    </footer>
-‎
-‎    <script>
-‎        let products = JSON.parse(localStorage.getItem('products')) || [];
-‎        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-‎        let orders = JSON.parse(localStorage.getItem('orders')) || [];
-‎        const usdToInr = 83; // Conversion rate (not used for new prices, as they are entered in INR)
-‎
-‎        function showPage(pageId) {
-‎            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-‎            document.getElementById(pageId).classList.add('active');
-‎        }
-‎
-‎        function renderProducts(filter = '') {
-‎            const list = document.getElementById('productsList');
-‎            const noResults = document.getElementById('noResults');
-‎            list.innerHTML = '';
-‎            const filtered = products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
-‎            if (filtered.length === 0 && filter) {
-‎                noResults.style.display = 'block';
-‎                return;
-‎            } else {
-‎                noResults.style.display = 'none';
-‎            }
-‎            filtered.forEach((product, index) => {
-‎                const priceInr = Math.round(product.price);
-‎                const deliveryInr = Math.round(product.deliveryCharge);
-‎                const card = document.createElement('div');
-‎                card.className = 'product-card';
-‎                card.innerHTML = `
-‎                    <i class="fas fa-box"></i>
-‎                    <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/200x200?text=No+Image'">
-‎                    <h3>${product.name}</h3>
-‎                    <p>${product.description}</p>
-‎                    <p>Price: ₹${priceInr} + Delivery: ₹${deliveryInr}</p>
-‎                    <input type="number" id="qty-${index}" min="1" value="1" style="width: 60px;">
-‎                    <button onclick="addToCart(${index})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-‎                `;
-‎                list.appendChild(card);
-‎            });
-‎        }
-‎
-‎        function renderAdminProducts() {
-‎            const list = document.getElementById('adminProductList');
-‎            list.innerHTML = '';
-‎            products.forEach((product, index) => {
-‎                const priceInr = Math.round(product.price);
-‎                const deliveryInr = Math.round(product.deliveryCharge);
-‎                const item = document.createElement('div');
-‎                item.className = 'product-item';
-‎                item.innerHTML = `
-‎                    <span>${product.name} - Price: ₹${priceInr} + Delivery: ₹${deliveryInr}</span>
-‎                    <button class="remove-btn" onclick="removeProduct(${index})">Remove</button>
-‎                `;
-‎                list.appendChild(item);
-‎            });
-‎        }
-‎
-‎        function renderAdminOrders() {
-‎            const list = document.getElementById('adminOrderList');
-‎            list.innerHTML = '';
-‎            orders.forEach((order, index) => {
-‎                const item = document.createElement('div');
-‎                item.className = 'order-item';
-‎                item.innerHTML = `
-‎                    <span>${order.product} x${order.quantity} - ₹${order.total} | ${order.name}, ${order.address}, ${order.phone}</span>
-‎                `;
-‎                list.appendChild(item);
-‎            });
-‎        }
-‎
-‎        function renderCart() {
-‎            const list = document.getElementById('cartItems');
-‎            list.innerHTML = '';
-‎            let total = 0;
-‎            cart.forEach((item, index) => {
-‎                const itemTotal = item.totalPrice * item.quantity;
-‎                total += itemTotal;
-‎                const div = document.createElement('div');
-‎                div.className = 'cart-item';
-‎                div.innerHTML = `
-‎                    ${item.name} - ₹${item.totalPrice} x 
-‎                    <input type="number" min="0" value="${item.quantity}" onchange="updateCartQty(${index}, this.value)">
-‎                    = ₹${itemTotal}
-‎                    <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
-‎                `;
-‎                list.appendChild(div);
-‎            });
-‎            document.getElementById('cartTotal').textContent = total;
-‎            localStorage.setItem('cart', JSON.stringify(cart));
-‎        }
-‎
-‎        document.getElementById('searchInput').addEventListener('input', (e) => renderProducts(e.target.value));
-‎
-‎        function addToCart(index) {
-‎            const qty = parseInt(document.getElementById(`qty-${index}`).value);
-‎            const product = products[index];
-‎            const totalPrice = Math.round(product.price + product.deliveryCharge);
-‎            const existing = cart.find(c => c.name === product.name);
-‎            if (existing) {
-‎                existing.quantity += qty;
-‎            } else {
-‎                cart.push({ name: product.name, totalPrice, quantity: qty });
-‎            }
-‎            renderCart();
-‎            alert('Added to cart!');
-‎        }
-‎
-‎        function updateCartQty(index, qty) {
-‎            qty = parseInt(qty);
-‎            if (qty <= 0) {
-‎                cart.splice(index, 1);
-‎            } else {
-‎                cart[index].quantity = qty;
-‎            }
-‎            renderCart();
-‎        }
-‎
-‎        function removeFromCart(index) {
-‎            cart.splice(index, 1);
-‎            renderCart();
-‎        }
-‎
-‎        function checkout() {
-‎            if (cart.length === 0) {
-‎                alert('Cart is empty!');
-‎                return;
-‎            }
-‎            const name = prompt('Name:');
-‎            const address = prompt('Address:');
-‎            const phone = prompt('Phone:');
-‎            if (name && address && phone) {
-‎                const total = parseInt(document.getElementById('cartTotal').textContent);
-‎                cart.forEach(item => {
-‎                    orders.push({
-‎                        product: item.name,
-‎                        quantity: item.quantity,
-‎                        total: item.totalPrice * item.quantity,
-‎                        name, address, phone
-‎                    });
-‎                });
-‎                localStorage.setItem('orders', JSON.stringify(orders));
-‎                cart = [];
-‎                renderCart();
-‎                alert('Order placed! Thank you.');
-‎            }
-‎        }
-‎
-‎        document.getElementById('contactBtn').addEventListener('click', () => showPage('contactPage'));
-‎        document.getElementById('cartBtn').addEventListener('click', () => {
-‎            showPage('cartPage');
-‎            renderCart();
-‎        });
-‎        document.getElementById('adminLoginBtn').addEventListener('click', () => showPage('adminPage'));
-‎
-‎        function adminLogin() {
-‎            const password = prompt('Enter admin password:');
-‎            if (password === 'Bhashkar business') {
-‎                document.getElementById('adminPanel').style.display = 'block';
-‎                renderAdminProducts();
-‎                renderAdminOrders();
-‎            } else {
-‎                alert('Incorrect password.');
-‎            }
-‎        }
-‎
-‎        function addProduct() {
-‎            const name = prompt('Product Name:');
-‎            const description = prompt('Description:');
-‎            const price = parseFloat(prompt('Price (in INR):'));
-‎            const deliveryCharge = parseFloat(prompt('Delivery Charge (in INR):'));
-‎            const image = prompt('Image URL:');
-‎            if (name && description && price >= 0 && deliveryCharge >= 0 && image) {
-‎                products.unshift({ name, description, price, deliveryCharge, image }); // Add to front
-‎                localStorage.setItem('products', JSON.stringify(products));
-‎                renderProducts();
-‎                renderAdminProducts();
-‎            } else {
-‎                alert('All fields are required and prices must be valid numbers.');
-‎            }
-‎        }
-‎
-‎        function removeProduct(index) {
-‎            if (confirm('Are you sure you want to remove this product?')) {
-‎                products.splice(index, 1);
-‎                localStorage.setItem('products', JSON.stringify(products));
-‎                renderProducts();
-‎                renderAdminProducts();
-‎            }
-‎        }
-‎
-‎        renderProducts();
-‎    </script>
-‎</body>
-‎</html>
-‎
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bsk Home Needs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- For icons -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f4f4f4 0%, #e8f5e8 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        header {
+            background: linear-gradient(135deg, #4CAF50 0%, #FF9800 100%);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            animation: fadeIn 1.5s ease-in;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        header p {
+            font-size: 1.2em;
+        }
+        footer {
+            background: linear-gradient(135deg, #FF9800 0%, #4CAF50 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+        }
+        footer button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        footer button:hover {
+            transform: scale(1.2);
+        }
+        footer button::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        footer button:hover::after {
+            opacity: 1;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            padding-bottom: 100px; /* Space for fixed footer */
+        }
+        .search-bar {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .search-bar input {
+            padding: 10px;
+            width: 300px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 1em;
+        }
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            animation: fadeInUp 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        .product-card:hover::before {
+            left: 100%;
+        }
+        .product-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .product-card img {
+            max-width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover img {
+            transform: rotate(2deg) scale(1.05);
+        }
+        .product-card i {
+            font-size: 2em;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        button {
+            background: linear-gradient(135deg, #4CAF50 0%, #FF9800 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            animation: bounce 2s infinite;
+        }
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .remove-btn {
+            background: #f44336;
+            margin-top: 10px;
+        }
+        .remove-btn:hover {
+            background: #d32f2f;
+        }
+        .back-btn {
+            background: #2196F3;
+            margin: 20px 0;
+        }
+        .back-btn:hover {
+            background: #1976D2;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+            60% { transform: translateY(-3px); }
+        }
+        .cart-page, .contact-page, .admin-page {
+            padding: 50px 20px;
+            text-align: center;
+        }
+        .cart-items {
+            margin: 20px 0;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .admin-panel {
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .admin-panel .product-list, .admin-panel .order-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .admin-panel .product-item, .admin-panel .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="homePage" class="page active">
+        <header>
+            <h1><i class="fas fa-truck"></i> Bsk Home Needs</h1>
+            <p>Fresh groceries delivered straight to your doorstep with love!</p>
+        </header>
+        <div class="container">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search for products...">
+            </div>
+            <h2><i class="fas fa-shopping-cart"></i> Our Products</h2>
+            <div class="products" id="productsList"></div>
+            <div id="noResults" style="display: none; text-align: center; font-size: 1.2em; color: #f44336;">Product not found</div>
+        </div>
+    </div>
 
+    <div id="contactPage" class="page">
+        <div class="container">
+            <h1>Contact Us</h1>
+            <p>Email: bskhomeneeds@gmail.com</p>
+            <button class="back-btn" onclick="showPage('homePage')">Back to Home Page</button>
+        </div>
+    </div>
+
+    <div id="cartPage" class="page">
+        <div class="container">
+            <h1><i class="fas fa-shopping-cart"></i> Your Cart</h1>
+            <div class="cart-items" id="cartItems"></div>
+            <p>Total: ₹<span id="cartTotal">0</span></p>
+            <button onclick="checkout()">Checkout</button>
+            <button class="back-btn" onclick="showPage('homePage')">Back to Home Page</button>
+        </div>
+    </div>
+
+    <div id="adminPage" class="page">
+        <div class="container">
+            <h1>Admin Login</h1>
+            <button onclick="adminLogin()">Enter Password</button>
+            <div id="adminPanel" style="display: none;">
+                <h2><i class="fas fa-tools"></i> Admin Panel</h2>
+                <button onclick="addProduct()">Add New Product</button>
+                <h3>Current Products:</h3>
+                <div class="product-list" id="adminProductList"></div>
+                <h3>Orders:</h3>
+                <div class="order-list" id="adminOrderList"></div>
+            </div>
+            <button class="back-btn" onclick="showPage('homePage')">Back to Home Page</button>
+        </div>
+    </div>
+
+    <footer>
+        <button id="contactBtn" data-tooltip="Go to contact page">✉️</button>
+        <button id="cartBtn" data-tooltip="Go to cart page">🛒</button>
+        <button id="adminLoginBtn" data-tooltip="Go to admin page">👤</button>
+    </footer>
+
+    <script>
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const usdToInr = 83; // Conversion rate (not used for new prices, as they are entered in INR)
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function renderProducts(filter = '') {
+            const list = document.getElementById('productsList');
+            const noResults = document.getElementById('noResults');
+            list.innerHTML = '';
+            const filtered = products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+            if (filtered.length === 0 && filter) {
+                noResults.style.display = 'block';
+                return;
+            } else {
+                noResults.style.display = 'none';
+            }
+            filtered.forEach((product, index) => {
+                const priceInr = Math.round(product.price);
+                const deliveryInr = Math.round(product.deliveryCharge);
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <i class="fas fa-box"></i>
+                    <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/200x200?text=No+Image'">
+                    <h3>${product.name}</h3>
+                    <p>${product.description}</p>
+                    <p>Price: ₹${priceInr} + Delivery: ₹${deliveryInr}</p>
+                    <input type="number" id="qty-${index}" min="1" value="1" style="width: 60px;">
+                    <button onclick="addToCart(${index})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function renderAdminProducts() {
+            const list = document.getElementById('adminProductList');
+            list.innerHTML = '';
+            products.forEach((product, index) => {
+                const priceInr = Math.round(product.price);
+                const deliveryInr = Math.round(product.deliveryCharge);
+                const item = document.createElement('div');
+                item.className = 'product-item';
+                item.innerHTML = `
+                    <span>${product.name} - Price: ₹${priceInr} + Delivery: ₹${deliveryInr}</span>
+                    <button class="remove-btn" onclick="removeProduct(${index})">Remove</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function renderAdminOrders() {
+            const list = document.getElementById('adminOrderList');
+            list.innerHTML = '';
+            orders.forEach((order, index) => {
+                const item = document.createElement('div');
+                item.className = 'order-item';
+                item.innerHTML = `
+                    <span>${order.product} x${order.quantity} - ₹${order.total} | ${order.name}, ${order.address}, ${order.phone}</span>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function renderCart() {
+            const list = document.getElementById('cartItems');
+            list.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, index) => {
+                const itemTotal = item.totalPrice * item.quantity;
+                total += itemTotal;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    ${item.name} - ₹${item.totalPrice} x 
+                    <input type="number" min="0" value="${item.quantity}" onchange="updateCartQty(${index}, this.value)">
+                    = ₹${itemTotal}
+                    <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
+                `;
+                list.appendChild(div);
+            });
+            document.getElementById('cartTotal').textContent = total;
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => renderProducts(e.target.value));
+
+        function addToCart(index) {
+            const qty = parseInt(document.getElementById(`qty-${index}`).value);
+            const product = products[index];
+            const totalPrice = Math.round(product.price + product.deliveryCharge);
+            const existing = cart.find(c => c.name === product.name);
+            if (existing) {
+                existing.quantity += qty;
+            } else {
+                cart.push({ name: product.name, totalPrice, quantity: qty });
+            }
+            renderCart();
+            alert('Added to cart!');
+        }
+
+        function updateCartQty(index, qty) {
+            qty = parseInt(qty);
+            if (qty <= 0) {
+                cart.splice(index, 1);
+            } else {
+                cart[index].quantity = qty;
+            }
+            renderCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Cart is empty!');
+                return;
+            }
+            const name = prompt('Name:');
+            const address = prompt('Address:');
+            const phone = prompt('Phone:');
+            if (name && address && phone) {
+                const total = parseInt(document.getElementById('cartTotal').textContent);
+                cart.forEach(item => {
+                    orders.push({
+                        product: item.name,
+                        quantity: item.quantity,
+                        total: item.totalPrice * item.quantity,
+                        name, address, phone
+                    });
+                });
+                localStorage.setItem('orders', JSON.stringify(orders));
+                cart = [];
+                renderCart();
+                alert('Order placed! Thank you.');
+            }
+        }
+
+        document.getElementById('contactBtn').addEventListener('click', () => showPage('contactPage'));
+        document.getElementById('cartBtn').addEventListener('click', () => {
+            showPage('cartPage');
+            renderCart();
+        });
+        document.getElementById('adminLoginBtn').addEventListener('click', () => showPage('adminPage'));
+
+        function adminLogin() {
+            const password = prompt('Enter admin password:');
+            if (password === 'Bhashkar business') {
+                document.getElementById('adminPanel').style.display = 'block';
+                renderAdminProducts();
+                renderAdminOrders();
+            } else {
+                alert('Incorrect password.');
+            }
+        }
+
+        function addProduct() {
+            const name = prompt('Product Name:');
+            const description = prompt('Description:');
+            const price = parseFloat(prompt('Price (in INR):'));
+            const deliveryCharge = parseFloat(prompt('Delivery Charge (in INR):'));
+            const image = prompt('Image URL:');
+            if (name && description && price >= 0 && deliveryCharge >= 0 && image) {
+                products.unshift({ name, description, price, deliveryCharge, image }); // Add to front
+                localStorage.setItem('products', JSON.stringify(products));
+                renderProducts();
+                renderAdminProducts();
+            } else {
+                alert('All fields are required and prices must be valid numbers.');
+            }
+        }
+
+        function removeProduct(index) {
+            if (confirm('Are you sure you want to remove this product?')) {
+                products.splice(index, 1);
+                localStorage.setItem('products', JSON.stringify(products));
+                renderProducts();
+                renderAdminProducts();
+            }
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
+‎    

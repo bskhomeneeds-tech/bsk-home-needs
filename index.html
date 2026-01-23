@@ -3,468 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bsk Home Needs</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- For icons -->
+    <title>Bsk home needs</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #f4f4f4 0%, #e8f5e8 100%);
-            color: #333;
-            overflow-x: hidden;
-        }
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
-        }
-        header {
-            background: linear-gradient(135deg, #4CAF50 0%, #FF9800 100%);
-            color: white;
-            text-align: center;
-            padding: 30px 20px;
-            animation: fadeIn 1.5s ease-in;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2.5em;
-        }
-        header p {
-            font-size: 1.2em;
-        }
-        footer {
-            background: linear-gradient(135deg, #FF9800 0%, #4CAF50 100%);
-            color: white;
-            text-align: center;
-            padding: 20px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
-        }
-        footer button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5em;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            position: relative;
-        }
-        footer button:hover {
-            transform: scale(1.2);
-        }
-        footer button::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8em;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        footer button:hover::after {
-            opacity: 1;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            padding-bottom: 100px; /* Space for fixed footer */
-        }
-        .search-bar {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .search-bar input {
-            padding: 10px;
-            width: 300px;
-            border: 2px solid #ddd;
-            border-radius: 25px;
-            font-size: 1em;
-        }
-        .products {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-        }
-        .product-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-            padding: 25px;
-            text-align: center;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            animation: fadeInUp 1s ease-out;
-            position: relative;
-            overflow: hidden;
-        }
-        .product-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-        .product-card:hover::before {
-            left: 100%;
-        }
-        .product-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        .product-card img {
-            max-width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 8px;
-            transition: transform 0.3s ease;
-        }
-        .product-card:hover img {
-            transform: rotate(2deg) scale(1.05);
-        }
-        .product-card i {
-            font-size: 2em;
-            color: #4CAF50;
-            margin-bottom: 10px;
-        }
-        button {
-            background: linear-gradient(135deg, #4CAF50 0%, #FF9800 100%);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            animation: bounce 2s infinite;
-        }
-        button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .remove-btn {
-            background: #f44336;
-            margin-top: 10px;
-        }
-        .remove-btn:hover {
-            background: #d32f2f;
-        }
-        .back-btn {
-            background: #2196F3;
-            margin: 20px 0;
-        }
-        .back-btn:hover {
-            background: #1976D2;
-        }
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-5px); }
-            60% { transform: translateY(-3px); }
-        }
-        .cart-page, .contact-page, .admin-page {
-            padding: 50px 20px;
-            text-align: center;
-        }
-        .cart-items {
-            margin: 20px 0;
-        }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        .admin-panel {
-            text-align: left;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .admin-panel .product-list, .admin-panel .order-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .admin-panel .product-item, .admin-panel .order-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        header { background-color: #007bff; color: white; padding: 10px; text-align: center; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .search-bar { margin-bottom: 20px; text-align: center; }
+        .search-bar input { padding: 10px; width: 300px; }
+        .search-bar button { padding: 10px; background-color: #28a745; color: white; border: none; cursor: pointer; }
+        .products { display: flex; flex-wrap: wrap; gap: 20px; }
+        .product { background: white; padding: 15px; border: 1px solid #ddd; border-radius: 5px; width: 200px; text-align: center; }
+        .product img { width: 100%; height: 150px; object-fit: cover; }
+        .product button { margin-top: 10px; padding: 5px 10px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        .icons { position: fixed; bottom: 10px; left: 10px; display: flex; gap: 20px; }
+        .icon { font-size: 24px; cursor: pointer; padding: 10px; background: white; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.3); }
+        .hidden { display: none; }
+        .login-form, .admin-form, .order-form, .add-product-form { background: white; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 400px; margin: 20px auto; }
+        .login-form input, .admin-form input, .order-form input, .order-form textarea, .add-product-form input { display: block; width: 100%; margin-bottom: 10px; padding: 10px; }
+        .login-form button, .admin-form button, .order-form button, .add-product-form button { padding: 10px; background-color: #28a745; color: white; border: none; cursor: pointer; width: 100%; }
+        .admin-panel { margin-top: 20px; }
+        .admin-panel .product { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .orders { max-height: 400px; overflow-y: scroll; }
+        .order { background: white; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; }
+        .bucket-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .back-btn { margin-top: 10px; padding: 10px; background-color: #dc3545; color: white; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div id="homePage" class="page active">
-        <header>
-            <h1><i class="fas fa-truck"></i> Bsk Home Needs</h1>
-            <p>Fresh groceries delivered straight to your doorstep with love!</p>
-        </header>
-        <div class="container">
+    <header>
+        <h1>Bsk home needs</h1>
+    </header>
+    <div class="container">
+        <!-- Login Page -->
+        <div id="login-page">
+            <div class="login-form">
+                <h2>Login</h2>
+                <input type="text" id="phone" placeholder="Phone Number (10 digits)" maxlength="10" pattern="[0-9]{10}" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button onclick="login()">Login</button>
+            </div>
+        </div>
+
+        <!-- Home Page -->
+        <div id="home-page" class="hidden">
             <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Search for products...">
+                <input type="text" id="search-input" placeholder="Search products...">
+                <button onclick="searchProduct()">Search</button>
             </div>
-            <h2><i class="fas fa-shopping-cart"></i> Our Products</h2>
-            <div class="products" id="productsList"></div>
-            <div id="noResults" style="display: none; text-align: center; font-size: 1.2em; color: #f44336;">Product not found</div>
+            <div id="search-result" class="hidden">
+                <!-- Search result will be shown here -->
+                <button class="back-btn" onclick="clearSearch()">Back to Home</button>
+            </div>
+            <div class="products" id="products-list">
+                <!-- Products will be loaded here -->
+            </div>
         </div>
-    </div>
 
-    <div id="contactPage" class="page">
-        <div class="container">
-            <h1>Contact Us</h1>
+        <!-- Contact Page -->
+        <div id="contact-page" class="hidden">
+            <h2>Contact Us</h2>
             <p>Email: bskhomeneeds@gmail.com</p>
-            <button class="back-btn" onclick="showPage('homePage')">Back to Home Page</button>
+            <button class="back-btn" onclick="showPage('home-page')">Back to Home</button>
         </div>
-    </div>
 
-    <div id="cartPage" class="page">
-        <div class="container">
-            <h1><i class="fas fa-shopping-cart"></i> Your Cart</h1>
-            <div class="cart-items" id="cartItems"></div>
-            <p>Total: ₹<span id="cartTotal">0</span></p>
-            <button onclick="checkout()">Checkout</button>
-            <button class="back-btn" onclick="showPage('homePage')">Back to Home Page</button>
-        </div>
-    </div>
-
-    <div id="adminPage" class="page">
-        <div class="container">
-            <h1>Admin Login</h1>
-            <button onclick="adminLogin()">Enter Password</button>
-            <div id="adminPanel" style="display: none;">
-                <h2><i class="fas fa-tools"></i> Admin Panel</h2>
-                <button onclick="addProduct()">Add New Product</button>
-                <h3>Current Products:</h3>
-                <div class="product-list" id="adminProductList"></div>
-                <h3>Orders:</h3>
-                <div class="order-list" id="adminOrderList"></div>
+        <!-- Admin Page -->
+        <div id="admin-page" class="hidden">
+            <div class="admin-form">
+                <h2>Admin Login</h2>
+                <input type="password" id="admin-password" placeholder="Password" required>
+                <button onclick="adminLogin()">Login</button>
             </div>
-            <button class="back-btn" onclick="showPage('homePage')">Back to Home Page</button>
+            <div id="admin-panel" class="hidden">
+                <h2>Admin Panel</h2>
+                <button onclick="showAddProductForm()">Add Product</button>
+                <div id="add-product-form" class="hidden add-product-form">
+                    <h3>Add New Product</h3>
+                    <input type="text" id="product-name" placeholder="Product Name" required>
+                    <input type="number" id="product-price" placeholder="Price in ₹" required>
+                    <input type="number" id="product-delivery" placeholder="Delivery Charge in ₹" required>
+                    <input type="file" id="product-image" accept="image/*" required>
+                    <button onclick="addProduct()">Submit</button>
+                    <button class="back-btn" onclick="hideAddProductForm()">Cancel</button>
+                </div>
+                <h3>Manage Products</h3>
+                <div id="admin-products"></div>
+                <h3>Orders</h3>
+                <div class="orders" id="admin-orders">
+                    <!-- Orders will be loaded here -->
+                </div>
+                <button class="back-btn" onclick="showPage('home-page')">Back to Home</button>
+            </div>
+        </div>
+
+        <!-- Bucket Page -->
+        <div id="bucket-page" class="hidden">
+            <h2>Your Bucket</h2>
+            <div id="bucket-items"></div>
+            <button onclick="showOrderForm()">Order All</button>
+            <button class="back-btn" onclick="showPage('home-page')">Back to Home</button>
+        </div>
+
+        <!-- Order Form -->
+        <div id="order-form" class="hidden">
+            <div class="order-form">
+                <h2>Place Order</h2>
+                <input type="text" id="order-name" placeholder="Name" required>
+                <input type="text" id="order-phone" placeholder="Phone Number (10 digits)" maxlength="10" pattern="[0-9]{10}" required>
+                <textarea id="order-address" placeholder="Address" required></textarea>
+                <div id="order-summary"></div>
+                <button onclick="placeOrder()">Place Order</button>
+                <button class="back-btn" onclick="showPage('bucket-page')">Back</button>
+            </div>
+        </div>
+
+        <!-- My Orders Page -->
+        <div id="my-orders-page" class="hidden">
+            <h2>My Orders</h2>
+            <div id="my-orders-list"></div>
+            <button class="back-btn" onclick="showPage('home-page')">Back to Home</button>
         </div>
     </div>
 
-    <footer>
-        <button id="contactBtn" data-tooltip="Go to contact page">✉️</button>
-        <button id="cartBtn" data-tooltip="Go to cart page">🛒</button>
-        <button id="adminLoginBtn" data-tooltip="Go to admin page">👤</button>
-    </footer>
+    <!-- Icons at Bottom Left -->
+    <div class="icons">
+        <div class="icon" onclick="showPage('contact-page')">✉️</div>
+        <div class="icon" onclick="showPage('admin-page')">👤</div>
+        <div class="icon" onclick="showPage('bucket-page')">🛒</div>
+        <div class="icon" onclick="showPage('my-orders-page')">🎒</div>
+    </div>
 
     <script>
+        // Load data from localStorage or initialize empty
         let products = JSON.parse(localStorage.getItem('products')) || [];
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let orders = JSON.parse(localStorage.getItem('orders')) || [];
-        const usdToInr = 83; // Conversion rate (not used for new prices, as they are entered in INR)
+        let bucket = [];
+        let loggedIn = false;
+        let userPhone = '';
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('products', JSON.stringify(products));
+            localStorage.setItem('orders', JSON.stringify(orders));
+        }
+
+        // Check if logged in on load
+        window.onload = function() {
+            if (localStorage.getItem('loggedIn') === 'true') {
+                loggedIn = true;
+                userPhone = localStorage.getItem('userPhone');
+                showPage('home-page');
+                loadProducts();
+            } else {
+                showPage('login-page');
+            }
+        };
 
         function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.container > div').forEach(div => div.classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+            if (pageId === 'bucket-page') loadBucket();
+            if (pageId === 'my-orders-page') loadMyOrders();
+            if (pageId === 'admin-panel') {
+                loadAdminProducts();
+                loadAdminOrders(); // Immediate load
+            }
         }
 
-        function renderProducts(filter = '') {
-            const list = document.getElementById('productsList');
-            const noResults = document.getElementById('noResults');
-            list.innerHTML = '';
-            const filtered = products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
-            if (filtered.length === 0 && filter) {
-                noResults.style.display = 'block';
-                return;
+        function login() {
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            if (phone.length === 10 && /^\d+$/.test(phone) && password) {
+                loggedIn = true;
+                userPhone = phone;
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('userPhone', phone);
+                showPage('home-page');
+                loadProducts();
             } else {
-                noResults.style.display = 'none';
+                alert('Invalid phone or password');
             }
-            filtered.forEach((product, index) => {
-                const priceInr = Math.round(product.price);
-                const deliveryInr = Math.round(product.deliveryCharge);
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `
-                    <i class="fas fa-box"></i>
-                    <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/200x200?text=No+Image'">
-                    <h3>${product.name}</h3>
-                    <p>${product.description}</p>
-                    <p>Price: ₹${priceInr} + Delivery: ₹${deliveryInr}</p>
-                    <input type="number" id="qty-${index}" min="1" value="1" style="width: 60px;">
-                    <button onclick="addToCart(${index})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-                `;
-                list.appendChild(card);
-            });
         }
 
-        function renderAdminProducts() {
-            const list = document.getElementById('adminProductList');
+        function loadProducts() {
+            const list = document.getElementById('products-list');
             list.innerHTML = '';
-            products.forEach((product, index) => {
-                const priceInr = Math.round(product.price);
-                const deliveryInr = Math.round(product.deliveryCharge);
-                const item = document.createElement('div');
-                item.className = 'product-item';
-                item.innerHTML = `
-                    <span>${product.name} - Price: ₹${priceInr} + Delivery: ₹${deliveryInr}</span>
-                    <button class="remove-btn" onclick="removeProduct(${index})">Remove</button>
+            products.filter(p => p.listed).forEach(p => {
+                list.innerHTML += `
+                    <div class="product">
+                        <img src="${p.image}" alt="${p.name}">
+                        <h3>${p.name}</h3>
+                        <p>₹${p.price}</p>
+                        <input type="number" id="qty-${p.id}" min="1" value="1">
+                        <button onclick="addToBucket(${p.id})">Add to Bucket</button>
+                        <button onclick="orderNow(${p.id})">Order Now</button>
+                    </div>
                 `;
-                list.appendChild(item);
             });
         }
 
-        function renderAdminOrders() {
-            const list = document.getElementById('adminOrderList');
-            list.innerHTML = '';
-            orders.forEach((order, index) => {
-                const item = document.createElement('div');
-                item.className = 'order-item';
-                item.innerHTML = `
-                    <span>${order.product} x${order.quantity} - ₹${order.total} | ${order.name}, ${order.address}, ${order.phone}</span>
-                `;
-                list.appendChild(item);
-            });
+        function addToBucket(id) {
+            const qty = parseInt(document.getElementById(`qty-${id}`).value);
+            if (qty > 0) {
+                const product = products.find(p => p.id === id);
+                bucket.push({ ...product, qty });
+                alert('Added to bucket');
+            }
         }
 
-        function renderCart() {
-            const list = document.getElementById('cartItems');
-            list.innerHTML = '';
-            let total = 0;
-            cart.forEach((item, index) => {
-                const itemTotal = item.totalPrice * item.quantity;
-                total += itemTotal;
-                const div = document.createElement('div');
-                div.className = 'cart-item';
-                div.innerHTML = `
-                    ${item.name} - ₹${item.totalPrice} x 
-                    <input type="number" min="0" value="${item.quantity}" onchange="updateCartQty(${index}, this.value)">
-                    = ₹${itemTotal}
-                    <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
-                `;
-                list.appendChild(div);
-            });
-            document.getElementById('cartTotal').textContent = total;
-            localStorage.setItem('cart', JSON.stringify(cart));
+        function orderNow(id) {
+            const qty = parseInt(document.getElementById(`qty-${id}`).value);
+            if (qty > 0) {
+                const product = products.find(p => p.id === id);
+                bucket = [{ ...product, qty }];
+                showOrderForm();
+            }
         }
 
-        document.getElementById('searchInput').addEventListener('input', (e) => renderProducts(e.target.value));
-
-        function addToCart(index) {
-            const qty = parseInt(document.getElementById(`qty-${index}`).value);
-            const product = products[index];
-            const totalPrice = Math.round(product.price + product.deliveryCharge);
-            const existing = cart.find(c => c.name === product.name);
-            if (existing) {
-                existing.quantity += qty;
+        function searchProduct() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const result = document.getElementById('search-result');
+            const found = products.find(p => p.name.toLowerCase() === query && p.listed);
+            if (found) {
+                result.innerHTML = `
+                    <div class="product">
+                        <img src="${found.image}" alt="${found.name}">
+                        <h3>${found.name}</h3>
+                        <p>₹${found.price}</p>
+                        <input type="number" id="search-qty" min="1" value="1">
+                        <button onclick="addToBucket(${found.id})">Add to Bucket</button>
+                        <button onclick="orderNow(${found.id})">Order Now</button>
+                    </div>
+                    <button class="back-btn" onclick="clearSearch()">Back to Home</button>
+                `;
             } else {
-                cart.push({ name: product.name, totalPrice, quantity: qty });
+                result.innerHTML = '<p>This product is not available</p><button class="back-btn" onclick="clearSearch()">Back to Home</button>';
             }
-            renderCart();
-            alert('Added to cart!');
+            result.classList.remove('hidden');
+            document.getElementById('products-list').classList.add('hidden');
         }
 
-        function updateCartQty(index, qty) {
-            qty = parseInt(qty);
-            if (qty <= 0) {
-                cart.splice(index, 1);
-            } else {
-                cart[index].quantity = qty;
-            }
-            renderCart();
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('search-result').classList.add('hidden');
+            document.getElementById('products-list').classList.remove('hidden');
         }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            renderCart();
-        }
-
-        function checkout() {
-            if (cart.length === 0) {
-                alert('Cart is empty!');
-                return;
-            }
-            const name = prompt('Name:');
-            const address = prompt('Address:');
-            const phone = prompt('Phone:');
-            if (name && address && phone) {
-                const total = parseInt(document.getElementById('cartTotal').textContent);
-                cart.forEach(item => {
-                    orders.push({
-                        product: item.name,
-                        quantity: item.quantity,
-                        total: item.totalPrice * item.quantity,
-                        name, address, phone
-                    });
-                });
-                localStorage.setItem('orders', JSON.stringify(orders));
-                cart = [];
-                renderCart();
-                alert('Order placed! Thank you.');
-            }
-        }
-
-        document.getElementById('contactBtn').addEventListener('click', () => showPage('contactPage'));
-        document.getElementById('cartBtn').addEventListener('click', () => {
-            showPage('cartPage');
-            renderCart();
-        });
-        document.getElementById('adminLoginBtn').addEventListener('click', () => showPage('adminPage'));
 
         function adminLogin() {
-            const password = prompt('Enter admin password:');
-            if (password === 'Bhashkar business') {
-                document.getElementById('adminPanel').style.display = 'block';
-                renderAdminProducts();
-                renderAdminOrders();
+            const pwd = document.getElementById('admin-password').value;
+            if (pwd === 'Bhashkar business') {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                document.querySelector('.admin-form').classList.add('hidden');
+                loadAdminProducts();
+                loadAdminOrders(); // Immediate load
             } else {
-                alert('Incorrect password.');
+                alert('Wrong password');
             }
+        }
+
+        function showAddProductForm() {
+            document.getElementById('add-product-form').classList.remove('hidden');
+        }
+
+        function hideAddProductForm() {
+            document.getElementById('add-product-form').classList.add('hidden');
         }
 
         function addProduct() {
-            const name = prompt('Product Name:');
-            const description = prompt('Description:');
-            const price = parseFloat(prompt('Price (in INR):'));
-            const deliveryCharge = parseFloat(prompt('Delivery Charge (in INR):'));
-            const image = prompt('Image URL:');
-            if (name && description && price >= 0 && deliveryCharge >= 0 && image) {
-                products.unshift({ name, description, price, deliveryCharge, image }); // Add to front
-                localStorage.setItem('products', JSON.stringify(products));
-                renderProducts();
-                renderAdminProducts();
+            const name = document.getElementById('product-name').value;
+            const price = parseInt(document.getElementById('product-price').value);
+            const deliveryCharge = parseInt(document.getElementById('product-delivery').value);
+            const file = document.getElementById('product-image').files[0];
+            if (name && price && deliveryCharge && file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const image = e.target.result;
+                    products.push({ id: products.length + 1, name, price, deliveryCharge, image, listed: true });
+                    saveData(); // Save after adding
+                    loadProducts();
+                    loadAdminProducts();
+                    hideAddProductForm();
+                    alert('Product added successfully!');
+                };
+                reader.readAsDataURL(file);
             } else {
-                alert('All fields are required and prices must be valid numbers.');
+                alert('Fill all fields');
             }
         }
 
-        function removeProduct(index) {
-            if (confirm('Are you sure you want to remove this product?')) {
-                products.splice(index, 1);
-                localStorage.setItem('products', JSON.stringify(products));
-                renderProducts();
-                renderAdminProducts();
+        function loadAdminProducts() {
+            const list = document.getElementById('admin-products');
+            list.innerHTML = '';
+            products.forEach(p => {
+                list.innerHTML += `
+                    <div class="product">
+                        <img src="${p.image}" alt="${p.name}" style="width:50px; height:50px;">
+                        <span>${p.name} - ₹${p.price} (Delivery: ₹${p.deliveryCharge})</span>
+                        <button onclick="toggleList(${p.id})">${p.listed ? 'Unlist' : 'List'}</button>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleList(id) {
+            const product = products.find(p => p.id === id);
+            product.listed = !product.listed;
+            saveData(); // Save after toggle
+            loadProducts();
+            loadAdminProducts();
+        }
+
+        function loadAdminOrders() {
+            const list = document.getElementById('admin-orders');
+            list.innerHTML = '';
+            if (orders.length === 0) {
+                list.innerHTML = '<p>No orders yet.</p>';
+            } else {
+                orders.slice().reverse().forEach(o => { // New orders at top
+                    list.innerHTML += `
+                        <div class="order">
+                            <p><strong>Order ID:</strong> ${o.id}</p>
+                            <p><strong>Name:</strong> ${o.name}</p>
+                            <p><strong>Phone:</strong> ${o.phone}</p>
+                            <p><strong>Address:</strong> ${o.address}</p>
+                            <p><strong>Items:</strong> ${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
+                            <p><strong>Total:</strong> ₹${o.total}</p>
+                            <button onclick="cancelOrder(${o.id})">Cancel</button>
+                        </div>
+                    `;
+                });
             }
         }
 
-        renderProducts();
+        function showOrderForm() {
+            if (bucket.length > 0) {
+                const total = bucket.reduce((sum, item) => sum + (item.price * item.qty), 0) + bucket[0].deliveryCharge;
+                document.getElementById('order-summary').innerHTML = `<p>Total: ₹${total} (including delivery)</p>`;
+                showPage('order-form');
+            } else {
+                alert('Bucket is empty');
+            }
+        }
+
+        function placeOrder() {
+            const name = document.getElementById('order-name').value;
+            const phone = document.getElementById('order-phone').value;
+            const address = document.getElementById('order-address').value;
+            if (name && phone.length === 10 && /^\d+$/.test(phone) && address && bucket.length > 0) {
+                const total = bucket.reduce((sum, item) => sum + (item.price * item.qty), 0) + bucket[0].deliveryCharge;
+                const order = { id: orders.length + 1, name, phone, address, items: [...bucket], total };
+                orders.push(order);
+                saveData(); // Save after placing order
+                bucket = [];
+                alert('Order placed');
+                showPage('home-page');
+            } else {
+                alert('Fill all details correctly');
+            }
+        }
+
+        function cancelOrder(id) {
+            orders = orders.filter(o => o.id !== id);
+            saveData(); // Save after cancel
+            loadAdminOrders();
+            loadMyOrders();
+        }
+
+        function loadBucket() {
+            const list = document.getElementById('bucket-items');
+            list.innerHTML = '';
+            bucket.forEach(item => {
+                list.innerHTML += `<div class="bucket-item"><span>${item.name} x${item.qty} - ₹${item.price * item.qty}</span></div>`;
+            });
+        }
+
+        function loadMyOrders() {
+            const list = document.getElementById('my-orders-list');
+            list.innerHTML = '';
+            orders.filter(o => o.phone === userPhone).forEach(o => {
+                list.innerHTML += `
+                    <div class="order">
+                        <p>Items: ${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
+                        <p>Total: ₹${o.total}</p>
+                        <button onclick="cancelOrder(${o.id})">Cancel</button>
+                    </div>
+                `;
+            });
+        }
     </script>
 </body>
 </html>
-‎    

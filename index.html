@@ -12,7 +12,7 @@
         
         /* Search Bar Style */
         .search-container { background: var(--amazon-blue); padding: 10px; display: flex; gap: 5px; position: sticky; top: 55px; z-index: 999; }
-        .search-container input { flex: 1; padding: 8px; border-radius: 4px; border: none; }
+        .search-container input { flex: 1; padding: 8px; border-radius: 4px; border: none; outline: none; }
         .btn-search { background: var(--amazon-orange); border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .btn-home-back { background: #fff; border: none; padding: 8px; border-radius: 4px; font-size: 14px; cursor: pointer; }
 
@@ -42,28 +42,28 @@
 <header><h2>Bsk home need's</h2></header>
 
 <div id="search-bar-ui" class="search-container">
-    <button class="btn-home-back" onclick="resetSearch()">🏠</button>
-    <input type="text" id="search-input" placeholder="सामान खोजें...">
+    <button class="btn-home-back" onclick="resetSearch()" title="Reset Home">🏠</button>
+    <input type="text" id="search-input" placeholder="Search products...">
     <button class="btn-search" onclick="searchProduct()">Search</button>
 </div>
 
 <div id="shop-page" class="page active-page">
-    <div id="product-grid" class="grid">सामान लोड हो रहा है...</div>
+    <div id="product-grid" class="grid">Loading products...</div>
 </div>
 
 <div id="cart-page" class="page">
     <h3 style="text-align:center;">🛒 Cart Checkout</h3>
-    <div id="cart-list" class="card" style="padding:10px;">Cart is Empty</div>
+    <div id="cart-list" class="card" style="padding:10px; text-align:center;">Cart is Empty</div>
     <div id="cart-summary" style="text-align:center; font-weight:bold; margin:10px; font-size: 18px; color:#B12704;">Total: ₹0</div>
     
     <div id="order-form" style="display: none; padding: 10px;">
-        <input type="text" id="cust-name" placeholder="आपका नाम">
-        <input type="number" id="cust-phone" placeholder="फ़ोन नंबर">
-        <textarea id="cust-addr" placeholder="पूरा पता (Address)"></textarea>
-        <button class="btn-buy" onclick="placeOrderDB()">✅ Order Confirm करें</button>
+        <input type="text" id="cust-name" placeholder="Full Name">
+        <input type="number" id="cust-phone" placeholder="Phone Number">
+        <textarea id="cust-addr" placeholder="Full Delivery Address"></textarea>
+        <button class="btn-buy" onclick="placeOrderDB()">✅ Confirm Order</button>
     </div>
     <div id="login-remind" class="card" style="padding:15px; text-align:center; color:red; font-weight:bold;">
-        Order करने के लिए पहले प्रोफाइल में लॉगिन करें!
+        Please login in Profile to place an order!
     </div>
 </div>
 
@@ -75,7 +75,7 @@
 
     <div id="auth-section" class="card" style="padding:15px; text-align:center;">
         <h4>Customer Login</h4>
-        <input type="email" id="user-email" placeholder="Gmail ID डालें">
+        <input type="email" id="user-email" placeholder="Enter Gmail ID">
         <button class="btn-buy" onclick="login()">Login</button>
     </div>
 
@@ -92,18 +92,21 @@
 </div>
 
 <div id="admin-dashboard" class="page">
-    <button class="btn-buy" onclick="show('admin-add')">➕ नया प्रोडक्ट जोड़ें</button>
+    <button class="btn-buy" onclick="show('admin-add')">➕ Add New Product</button>
     <h3>📦 All Orders (Admin View)</h3>
     <div id="admin-orders-list" style="background:#eee; padding:10px; border-radius:8px;"></div>
+    <h3>🛍 Inventory Management</h3>
+    <div id="admin-inventory-list" class="card" style="padding:10px;"></div>
 </div>
 
 <div id="admin-add" class="page">
     <div class="card" style="padding:15px;">
-        <input type="text" id="p-name" placeholder="नाम">
-        <input type="number" id="p-price" placeholder="कीमत">
-        <input type="text" id="p-img" placeholder="इमेज URL">
-        <button class="btn-buy" onclick="saveProduct()">Save</button>
-        <button onclick="show('admin-dashboard')" style="margin-top:10px; border:none; background:none;">Back</button>
+        <h3>Add Product</h3>
+        <input type="text" id="p-name" placeholder="Product Name">
+        <input type="number" id="p-price" placeholder="Price">
+        <input type="text" id="p-img" placeholder="Image URL">
+        <button class="btn-buy" onclick="saveProduct()">Save Product</button>
+        <button onclick="show('admin-dashboard')" style="margin-top:10px; border:none; background:none;">Back to Dashboard</button>
     </div>
 </div>
 
@@ -137,10 +140,9 @@
                     <button class="btn-buy" style="background:var(--amazon-orange);" onclick="addCart('${p.Name}', ${p.price})">Add to Cart</button>
                 </div>
             </div>
-        `).join('') || "कोई सामान नहीं मिला।";
+        `).join('') || "No products found.";
     }
 
-    // Search Logic
     function searchProduct() {
         const query = document.getElementById('search-input').value.toLowerCase();
         const filtered = allItems.filter(p => p.Name.toLowerCase().includes(query));
@@ -154,11 +156,11 @@
         show('shop-page');
     }
 
-    function addCart(n, p) { cart.push({n, p}); updateCart(); alert(n + " कार्ट में जुड़ गया!"); }
+    function addCart(n, p) { cart.push({n, p}); updateCart(); alert(n + " added to cart!"); }
     
     function updateCart() {
         let t = cart.reduce((s, i) => s + i.p, 0);
-        document.getElementById('cart-list').innerHTML = cart.map(i => `<div style="padding:5px; border-bottom:1px solid #eee;">${i.n} - ₹${i.p}</div>`).join('') || "Cart Empty";
+        document.getElementById('cart-list').innerHTML = cart.map(i => `<div style="padding:5px; border-bottom:1px solid #eee;">${i.n} - ₹${i.p}</div>`).join('') || "Cart is Empty";
         document.getElementById('cart-summary').innerText = "Total: ₹" + t;
         document.getElementById('order-form').style.display = user ? 'block' : 'none';
         document.getElementById('login-remind').style.display = user ? 'none' : 'block';
@@ -166,23 +168,24 @@
 
     async function placeOrderDB() {
         const n = document.getElementById('cust-name').value, ph = document.getElementById('cust-phone').value, a = document.getElementById('cust-addr').value;
-        if(!n || !ph || !a || cart.length === 0) return alert("पूरी जानकारी भरें!");
+        if(!n || !ph || !a || cart.length === 0) return alert("Please fill all details!");
         
         const details = cart.map(i => i.n).join(', ');
-        await _supabase.from('orders').insert([{ 
+        const { error } = await _supabase.from('orders').insert([{ 
             customer_name: n, customer_email: user, 
-            order_details: `सामान: ${details} | फोन: ${ph} | पता: ${a}`, 
+            order_details: `Items: ${details} | Phone: ${ph} | Addr: ${a}`, 
             total_price: cart.reduce((s, i) => s + i.p, 0), status: 'Pending' 
         }]);
 
-        alert("Order Success!"); cart = []; updateCart(); show('shop-page');
+        if(!error) { alert("Order Placed Successfully!"); cart = []; updateCart(); show('shop-page'); }
     }
 
     function login() { 
         let mail = document.getElementById('user-email').value; 
-        if(mail.includes("@")) { user = mail; localStorage.setItem('u_email', user); updateUserUI(); }
+        if(mail.includes("@")) { user = mail; localStorage.setItem('u_email', user); updateUserUI(); alert("Login Success!"); }
+        else { alert("Please enter a valid Gmail ID!"); }
     }
-    function logout() { localStorage.removeItem('u_email'); user = null; updateUserUI(); }
+    function logout() { localStorage.removeItem('u_email'); user = null; updateUserUI(); alert("Logged Out!"); }
 
     function updateUserUI() {
         if(user) { 
@@ -204,36 +207,50 @@
                 <b>${o.order_details.split('|')[0]}</b><br>
                 Total: ₹${o.total_price} | Status: <span class="${o.status==='Delivered'?'status-delivered':'status-pending'}">${o.status}</span>
             </div>
-        `).join('') || "कोई आर्डर नहीं मिला।";
+        `).join('') || "No orders found.";
     }
 
-    function adminAuth() { if(prompt("Admin Password:") === "Bhashkar jyoti Roy") { show('admin-dashboard'); loadOrders(); } }
+    function adminAuth() { if(prompt("Admin Password:") === "Bhashkar jyoti Roy") { show('admin-dashboard'); loadOrders(); loadInventory(); } }
 
     async function loadOrders() {
         const { data } = await _supabase.from('orders').select('*').order('created_at', { ascending: false });
         document.getElementById('admin-orders-list').innerHTML = data?.map(o => `
             <div class="card" style="padding:10px; font-size:12px;">
-                <b>कस्टमर:</b> ${o.customer_name}<br><b>विवरण:</b> ${o.order_details}<br>
+                <b>Customer:</b> ${o.customer_name}<br><b>Details:</b> ${o.order_details}<br>
                 <b>Status:</b> ${o.status}<br>
-                <button onclick="markDelivered('${o.id}')" style="background:green; color:white; border:none; padding:5px; margin-top:5px; border-radius:3px;">Deliver</button>
-                <button onclick="cancelOrder('${o.id}')" style="background:red; color:white; border:none; padding:5px; margin-top:5px; border-radius:3px;">Cancel</button>
+                <div style="margin-top:5px;">
+                    <button onclick="markDelivered('${o.id}')" style="background:green; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;">Mark Delivered</button>
+                    <button onclick="cancelOrder('${o.id}')" style="background:red; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;">Delete</button>
+                </div>
             </div>
         `).join('') || "No orders.";
     }
 
     async function markDelivered(id) { await _supabase.from('orders').update({ status: 'Delivered' }).eq('id', id); loadOrders(); }
-    async function cancelOrder(id) { if(confirm("डिलीट करें?")) { await _supabase.from('orders').delete().eq('id', id); loadOrders(); } }
+    async function cancelOrder(id) { if(confirm("Delete this order?")) { await _supabase.from('orders').delete().eq('id', id); loadOrders(); } }
+
+    async function loadInventory() {
+        const { data } = await _supabase.from('inventory').select('*');
+        document.getElementById('admin-inventory-list').innerHTML = data?.map(p => `
+            <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee;">
+                <span>${p.Name}</span>
+                <button onclick="deleteProd('${p.id}')" style="color:red; border:none; background:none; font-weight:bold; cursor:pointer;">X</button>
+            </div>
+        `).join('');
+    }
+
+    async function deleteProd(id) { if(confirm("Delete Product?")) { await _supabase.from('inventory').delete().eq('id', id); loadInventory(); start(); } }
 
     async function saveProduct() {
         const n = document.getElementById('p-name').value, p = document.getElementById('p-price').value, i = document.getElementById('p-img').value;
+        if(!n || !p || !i) return alert("Fill all info!");
         await _supabase.from('inventory').insert([{ Name: n, price: parseInt(p), img: i }]);
-        alert("Saved!"); show('admin-dashboard'); start();
+        alert("Product Added!"); show('admin-dashboard'); start();
     }
 
     function show(id) { 
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); 
         document.getElementById(id).classList.add('active-page');
-        // होम पेज पर ही सर्च बार दिखेगा
         document.getElementById('search-bar-ui').style.display = (id === 'shop-page') ? 'flex' : 'none';
         window.scrollTo(0,0);
     }
@@ -242,5 +259,3 @@
 </body>
 </html>
 
-
-    

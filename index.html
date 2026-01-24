@@ -11,28 +11,20 @@
         header { background: var(--amazon-blue); color: white; padding: 12px; text-align: center; position: sticky; top: 0; z-index: 1000; }
         .page { display: none; padding: 10px; animation: fadeIn 0.3s; }
         .active-page { display: block !important; }
-        
-        /* Grid Layout: Ek line mein do product */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .card { background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
-        
         .product-img { width: 100%; height: 140px; object-fit: contain; background: white; border-bottom: 1px solid #f0f0f0; }
         .product-info { padding: 8px; text-align: center; flex-grow: 1; }
-        
         .p-name { font-size: 13px; font-weight: bold; color: #333; margin: 4px 0; height: 32px; overflow: hidden; }
         .p-price { color: #B12704; font-size: 16px; font-weight: bold; margin: 0; }
         .p-delivery { color: #565959; font-size: 10px; margin-bottom: 6px; }
-
-        .btn-buy { background: #fb641b; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .btn-cart { background: #ff9f00; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 4px; font-size: 12px; }
-        
+        .btn-buy { background: #fb641b; color: white; border: none; padding: 10px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .btn-cart { background: #ff9f00; color: white; border: none; padding: 10px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 4px; font-size: 12px; }
         .search-container { display: flex; margin-bottom: 15px; }
         .search-container input { border-radius: 4px 0 0 4px; border: 1px solid #ccc; padding: 10px; flex: 1; outline: none; }
         .btn-search { background: var(--amazon-orange); border: none; padding: 10px 15px; border-radius: 0 4px 4px 0; cursor: pointer; font-weight: bold; }
-        
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
         .nav-item { border: none; background: none; font-size: 11px; font-weight: bold; color: var(--amazon-blue); cursor: pointer; }
-        
         input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -43,20 +35,21 @@
 
 <div id="shop-page" class="page active-page">
     <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search product...">
+        <input type="text" id="search-input" placeholder="Search product name...">
         <button class="btn-search" onclick="filter()">Search</button>
     </div>
     <div id="product-grid" class="grid">Loading Products...</div>
 </div>
 
 <div id="cart-page" class="page">
-    <h3 style="text-align:center;">🛒 My Cart</h3>
+    <h3 style="text-align:center;">🛒 Shopping Cart</h3>
     <div id="cart-list" class="card" style="padding:10px; text-align:center;">Empty</div>
     <div id="cart-summary" style="margin: 15px 0; font-weight: bold; font-size: 18px; text-align: center; color: #B12704;">Total: ₹0</div>
     <div class="card" style="padding:15px;">
-        <input type="text" id="cust-name" placeholder="Full Name">
-        <textarea id="cust-addr" placeholder="Address with PIN"></textarea>
-        <button class="btn-buy" onclick="placeBulkOrder()">📦 Order on WhatsApp</button>
+        <input type="text" id="cust-name" placeholder="Customer Name">
+        <input type="number" id="cust-phone" placeholder="Customer Phone Number">
+        <textarea id="cust-addr" placeholder="Full Address with PIN Code"></textarea>
+        <button class="btn-buy" onclick="placeBulkOrder()">📦 Confirm on WhatsApp</button>
     </div>
 </div>
 
@@ -81,7 +74,7 @@
         <h3>Product Details</h3>
         <input type="text" id="p-name" placeholder="Name">
         <input type="number" id="p-price" placeholder="Price">
-        <input type="number" id="p-del" placeholder="Delivery">
+        <input type="number" id="p-del" placeholder="Delivery Charge">
         <input type="text" id="p-img" placeholder="Image URL">
         <button class="btn-buy" onclick="saveProduct()">Save Product</button>
         <button onclick="show('admin-dashboard')" style="width:100%; background:none; border:none; margin-top:10px;">Cancel</button>
@@ -98,7 +91,9 @@
     const SB_URL = "https://lfxorgprrgpkkiqdjqdb.supabase.co";
     const SB_KEY = "sb_publishable_yyyMF6aEwhtYh4RHUFrIgA_OEU64IIX";
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
-    const MY_WA = "918001192470";
+    
+    // YAHAN APKA NUMBER HAI - BILKUL OPEN
+    const MY_WA = "918001192470"; 
 
     let items = [], cart = [];
 
@@ -120,16 +115,15 @@
                     <button class="btn-buy" style="margin-top:4px;" onclick="buyNow('${p.Name}', ${p.price}, ${p.delivery_charge || 0})">Buy Now</button>
                 </div>
             </div>
-        `).join('') || "<p style='width:100%; text-align:center;'>No products.</p>";
+        `).join('') || "<p style='width:100%; text-align:center;'>No products found.</p>";
     }
 
     function filter() {
         const q = document.getElementById('search-input').value.toLowerCase().trim();
-        const filtered = items.filter(x => x.Name.toLowerCase().includes(q));
-        render(filtered);
+        render(items.filter(x => x.Name.toLowerCase().includes(q)));
     }
 
-    function addCart(n, p, d) { cart.push({n, p, d}); updateCart(); alert(n + " added!"); }
+    function addCart(n, p, d) { cart.push({n, p, d}); updateCart(); alert(n + " added to cart!"); }
     function buyNow(n, p, d) { cart = [{n, p, d}]; updateCart(); show('cart-page'); }
     
     function updateCart() {
@@ -139,11 +133,19 @@
     }
 
     async function placeBulkOrder() {
-        const n = document.getElementById('cust-name').value, a = document.getElementById('cust-addr').value;
-        if(cart.length === 0 || !n || !a) return alert("Fill details!");
+        const n = document.getElementById('cust-name').value;
+        const ph = document.getElementById('cust-phone').value;
+        const a = document.getElementById('cust-addr').value;
+        
+        if(cart.length === 0 || !n || !ph || !a) return alert("Please fill all details!");
+        
         const details = cart.map(i => i.n).join(', ');
         const total = cart.reduce((s, i) => s + i.p + i.d, 0);
-        window.open(`https://wa.me/${MY_WA}?text=Order: ${details}%0ATotal: ₹${total}%0AName: ${n}%0AAddr: ${a}`);
+        
+        // DIRECT WHATSAPP LINK
+        const waMsg = `*New Order*%0A------------------%0AItems: ${details}%0ATotal Amount: ₹${total}%0A%0A*Customer Details*%0AName: ${n}%0APhone: ${ph}%0AAddress: ${a}`;
+        
+        window.open(`https://wa.me/${MY_WA}?text=${waMsg}`);
     }
 
     function adminAuth() { if(prompt("Pass:") === "Bhashkar jyoti Roy") { show('admin-dashboard'); loadAdminData(); } }
@@ -154,15 +156,15 @@
 
     async function saveProduct() {
         const n = document.getElementById('p-name').value, p = document.getElementById('p-price').value, d = document.getElementById('p-del').value, i = document.getElementById('p-img').value;
-        if(!n || !p || !i) return alert("Fill Name, Price & Image!");
+        if(!n || !p || !i) return alert("Fill Name, Price & Image URL!");
         await _supabase.from('inventory').insert([{ Name: n, price: parseInt(p), delivery_charge: parseInt(d || 0), img: i }]);
-        alert("Added!"); show('admin-dashboard'); start();
+        alert("Product Added!"); show('admin-dashboard'); start();
     }
 
-    async function unlist(id) { if(confirm("Delete?")) { await _supabase.from('inventory').delete().eq('id', id); loadAdminData(); start(); } }
+    async function unlist(id) { if(confirm("Delete this product?")) { await _supabase.from('inventory').delete().eq('id', id); loadAdminData(); start(); } }
     async function repairDB() {
         await _supabase.rpc('exec_sql', { sql_query: `ALTER TABLE inventory ADD COLUMN IF NOT EXISTS delivery_charge int DEFAULT 0;` });
-        alert("Fixed!");
+        alert("Database Fixed!");
     }
 
     function show(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); document.getElementById(id).classList.add('active-page'); window.scrollTo(0,0); }
@@ -170,5 +172,3 @@
 </script>
 </body>
 </html>
-
-

@@ -3,244 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bsk Home Needs</title>
+    <title>Bskhomeneeds - Official</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary:#28a745; --light:#f4f7f6; }
-        body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--light);padding-bottom:80px;}
-        header{background:var(--primary);color:#fff;padding:15px;text-align:center;position:sticky;top:0;z-index:1000;}
-        .page{display:none;padding:15px;animation:fadeIn 0.3s;}
-        .active{display:block}
-        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-        .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        .card{background:#fff;padding:12px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);text-align:center;position:relative}
-        .card img{width:100%;height:110px;object-fit:cover;border-radius:8px;}
-        .badge{position:absolute;top:5px;right:5px;background:orange;color:#fff;font-size:10px;padding:2px 6px;border-radius:5px;}
-        .btn{padding:12px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;width:100%;margin-top:8px;}
-        .btn-main{background:var(--primary);color:#fff}
-        .input-f{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;}
-        .nav{position:fixed;bottom:0;width:100%;background:#fff;display:flex;justify-content:space-around;padding:12px 0;border-top:1px solid #eee;z-index:1000}
-        .nav-btn{background:none;border:none;font-size:12px;color:#666;cursor:pointer}
-        .price-tag{color:var(--primary); font-weight:bold; font-size:18px}
-        .del-tag{font-size:11px; color:#777}
+        :root { --amazon-blue: #232f3e; --amazon-orange: #ff9900; --bg: #f3f3f3; --red: #d9534f; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); padding-bottom: 80px; }
+        header { background: var(--amazon-blue); color: white; padding: 12px; position: sticky; top: 0; z-index: 1000; text-align: center; }
+        .cat-bar { display: flex; overflow-x: auto; background: #37475a; padding: 10px; gap: 10px; white-space: nowrap; }
+        .cat-bar::-webkit-scrollbar { display: none; }
+        .cat-item { background: white; color: black; padding: 6px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .cat-item.active { background: var(--amazon-orange); color: white; }
+        .page { display: none; padding: 15px; }
+        .active-page { display: block !important; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .btn-amazon { background: var(--amazon-orange); border: 1px solid #a88734; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
+        .nav-item { border: none; background: none; font-size: 11px; font-weight: bold; color: var(--amazon-blue); cursor: pointer; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .scroll-box { max-height: 300px; overflow-y: auto; background: #f9f9f9; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
-<header><h3 style="margin:0">Bsk Home Needs</h3></header>
+<header>
+    <h2 style="margin:0; color: var(--amazon-orange);">Bskhomeneeds</h2>
+    <input type="text" id="search" placeholder="🔍 Search products..." onkeyup="filterProducts()" style="width:90%; margin-top:10px; padding:8px; border:none; border-radius:5px;">
+</header>
 
-<div id="home" class="page active">
-    <input type="text" id="search-q" class="input-f" placeholder="🔍 Search products..." onkeyup="doSearch()">
-    <div id="product-grid" class="grid">☁️ Loading products from cloud...</div>
+<div class="cat-bar">
+    <div class="cat-item active" onclick="filterByCat('All', this)">All</div>
+    <div class="cat-item" onclick="filterByCat('Grocery', this)">Grocery</div>
+    <div class="cat-item" onclick="filterByCat('Electronics', this)">Electronics</div>
+    <div class="cat-item" onclick="filterByCat('Kitchen', this)">Kitchen</div>
+    <div class="cat-item" onclick="filterByCat('Fashion', this)">Fashion</div>
 </div>
 
-<div id="cart" class="page">
-    <h3>🛒 My Bucket</h3>
-    <div id="bucket-list"></div>
-    <div id="checkout-box" style="display:none; background:#fff; padding:15px; border-radius:12px; margin-top:15px;">
-        <h4>Checkout Details</h4>
-        <input id="ord-name" class="input-f" placeholder="Recipient Name">
-        <input id="ord-addr" class="input-f" placeholder="Full Delivery Address">
-        <div id="bill-details" style="border-top:1px dashed #ccc; padding-top:10px; margin-top:10px;"></div>
-        <button class="btn btn-main" onclick="confirmOrder()">Send WhatsApp Order 🚀</button>
-    </div>
+<div id="shop-page" class="page active-page">
+    <div id="product-grid" class="grid">Loading...</div>
 </div>
 
-<div id="admin" class="page">
-    <div id="admin-login">
-        <h3>Admin Panel</h3>
-        <input id="pass-in" class="input-f" type="password" placeholder="Password">
-        <button class="btn btn-main" onclick="adminLogin()">Login</button>
+<div id="cart-page" class="page">
+    <h3>🛒 My Cart</h3>
+    <div id="cart-items" class="card">Cart is empty.</div>
+    <div id="cart-total" style="font-weight:bold; margin: 10px 0;"></div>
+    <div id="order-form" style="display:none;" class="card">
+        <input type="text" id="c-name" placeholder="Full Name">
+        <input type="text" id="c-addr" placeholder="Address">
+        <input type="text" id="c-phone" placeholder="Phone">
+        <button class="btn-amazon" onclick="completeOrder()">Order via WhatsApp</button>
     </div>
-    <div id="admin-panel" style="display:none">
-        <h4>Add Product to Cloud</h4>
-        <input id="p-name" class="input-f" placeholder="Product Name">
-        <input id="p-price" class="input-f" type="number" placeholder="Price">
-        <input id="p-del" class="input-f" type="number" placeholder="Delivery Fee">
-        <input id="p-img" class="input-f" placeholder="Image URL">
-        <button class="btn btn-main" id="pub-btn" onclick="saveToCloud()">Publish Live 🚀</button>
+    <button id="checkout-btn" class="btn-amazon" onclick="openCheckout()">Proceed to Buy</button>
+    <button class="btn-amazon" style="background:#ddd; margin-top:10px;" onclick="show('orders-page')">📦 My Orders</button>
+</div>
+
+<div id="orders-page" class="page">
+    <button onclick="show('cart-page')" style="border:none; background:none; color:blue;">← Back</button>
+    <h3>📦 Order History</h3>
+    <div id="my-orders-list" class="scroll-box">Login to see orders.</div>
+</div>
+
+<div id="contact-page" class="page">
+    <div class="card" style="text-align: left;">
+        <h3>📧 Contact Support</h3>
+        <p>Email: <b>bskhomeneeds@gmail.com</b></p>
         <hr>
-        <h4>Live Inventory</h4>
-        <div id="admin-list"></div>
-    </div>
-</div>
-
-<div id="about" class="page">
-    <div style="background:#fff; padding:20px; border-radius:12px; text-align:center">
-        <h3>Contact Support</h3>
-        <p>📧 <b>bskhomeneeds@gmail.com</b></p>
-        <hr>
-        <div id="user-info">
-            <h4>👤 Create ID</h4>
-            <input id="u-name" class="input-f" placeholder="Your Name">
-            <input id="u-phone" class="input-f" placeholder="WhatsApp Number">
-            <button class="btn btn-main" onclick="saveProfile()">Save ID</button>
+        <div id="login-section">
+            <h4>👤 Create ID / Login</h4>
+            <input type="email" id="user-email" placeholder="Enter Gmail">
+            <button class="btn-amazon" onclick="loginUser()">Login</button>
         </div>
-        <div id="profile-active" style="display:none">
-            <p id="p-welcome" style="color:green; font-weight:bold"></p>
-            <button class="btn" style="border:1px solid #ddd" onclick="logout()">Logout</button>
+        <div id="profile-section" style="display:none;">
+            <p id="display-user"></p>
+            <button onclick="logoutUser()" style="color:red; cursor:pointer; background:none; border:none;">Logout</button>
         </div>
     </div>
 </div>
 
-<div class="nav">
-    <button class="nav-btn" onclick="show('home')">🏠<br>Home</button>
-    <button class="nav-btn" onclick="show('cart')">🛒<br>Bucket</button>
-    <button class="nav-btn" onclick="show('admin')">👤<br>Admin</button>
-    <button class="nav-btn" onclick="show('about')">ℹ️<br>Account</button>
+<div id="admin-page" class="page">
+    <h3 style="text-align:center;">🛠 Admin Dashboard</h3>
+    <div class="card">
+        <h4>➕ Add Product</h4>
+        <input type="text" id="p-name" placeholder="Name">
+        <input type="number" id="p-price" placeholder="Price">
+        <input type="text" id="p-img" placeholder="Image URL">
+        <select id="p-cat">
+            <option value="Grocery">Grocery</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Kitchen">Kitchen</option>
+            <option value="Fashion">Fashion</option>
+        </select>
+        <button class="btn-amazon" onclick="uploadProduct()">Upload</button>
+    </div>
+    <div class="card">
+        <h4>📋 Inventory / Unlist</h4>
+        <div id="admin-inv-list" class="scroll-box"></div>
+    </div>
+    <div class="card">
+        <h4>📦 All Orders (Scroll)</h4>
+        <div id="admin-ord-list" class="scroll-box"></div>
+    </div>
 </div>
+
+<nav class="bottom-nav">
+    <button class="nav-item" onclick="show('shop-page')">🏠<br>Home</button>
+    <button class="nav-item" onclick="show('cart-page')">🛒<br>Cart</button>
+    <button class="nav-item" onclick="show('contact-page')">📧<br>Contact</button>
+    <button class="nav-item" onclick="adminAuth()">⚙️<br>Admin</button>
+</nav>
 
 <script>
-// Cloud Database Configuration
-const DB_NAME = "bsk_official_store_v2";
-const API = `https://kvdb.io/${DB_NAME}/inventory`;
+    const SB_URL = "https://lfxorgprrgpkkiqdjqdb.supabase.co";
+    const SB_KEY = "sb_publishable_yyyMF6aEwhtYh4RHUFrIgA_OEU64IIX";
+    const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-let state = { products: [], cart: [] };
+    let allItems = [], cart = [], currentUser = localStorage.getItem('bsk_id');
 
-async function init() {
-    // Load User Profile
-    const saved = localStorage.getItem("bsk_user");
-    if(saved) {
-        const user = JSON.parse(saved);
-        document.getElementById("user-info").style.display = "none";
-        document.getElementById("profile-active").style.display = "block";
-        document.getElementById("p-welcome").innerText = "Logged in as: " + user.name;
-    }
-    await syncCloud();
-}
-
-async function syncCloud() {
-    try {
-        const res = await fetch(API + "?v=" + Date.now());
-        if(res.ok) {
-            state.products = await res.json();
-            // Seed defaults if empty
-            if(state.products.length === 0) {
-                const seed = [
-                    {name:"American Onion Style", price:5, del:2, img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_p6v9_Yw9vD4_jB9G_X-W8-eR_S0X_X_X_A&s"},
-                    {name:"Lays Magic Masala", price:5, del:2, img:"https://m.media-amazon.com/images/I/718nSAtu6SL._SL1500_.jpg"}
-                ];
-                await fetch(API, {method:"POST", body:JSON.stringify(seed)});
-                state.products = seed;
-            }
+    async function init() {
+        const { data } = await _supabase.from('inventory').select('*');
+        allItems = data;
+        renderItems(data);
+        if(currentUser) {
+            document.getElementById('login-section').style.display='none';
+            document.getElementById('profile-section').style.display='block';
+            document.getElementById('display-user').innerText = "Logged as: " + currentUser;
         }
-    } catch(e) { console.error("Sync Error"); }
-    renderHome();
-}
-
-function renderHome(data = state.products) {
-    const grid = document.getElementById("product-grid");
-    grid.innerHTML = "";
-    data.forEach((p, i) => {
-        grid.innerHTML += `
-        <div class="card">
-            <span class="badge">Live</span>
-            <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150'">
-            <div style="margin:5px 0"><b>${p.name}</b></div>
-            <div class="price-tag">₹${p.price}</div>
-            <div class="del-tag">+ ₹${p.del} Delivery</div>
-            <button class="btn btn-main" onclick="addToBucket(${i})">Add to Bucket</button>
-        </div>`;
-    });
-}
-
-function addToBucket(i) {
-    state.cart.push(state.products[i]);
-    alert("Item added to bucket!");
-    updateBucketUI();
-}
-
-function updateBucketUI() {
-    const list = document.getElementById("bucket-list");
-    const box = document.getElementById("checkout-box");
-    const bill = document.getElementById("bill-details");
-    list.innerHTML = "";
-    
-    let subtotal = 0, delivery = 0;
-    
-    state.cart.forEach((p, i) => {
-        subtotal += Number(p.price);
-        delivery += Number(p.del);
-        list.innerHTML += `<div class="card" style="display:flex;justify-content:space-between;margin-bottom:5px"><span>${p.name} (₹${p.price})</span><button onclick="state.cart.splice(${i},1);updateBucketUI()" style="color:red;border:none;background:none">X</button></div>`;
-    });
-
-    bill.innerHTML = `<p>Items Total: ₹${subtotal}</p><p>Delivery Fee: ₹${delivery}</p><h3 style="color:var(--primary)">Grand Total: ₹${subtotal + delivery}</h3>`;
-    box.style.display = state.cart.length ? "block" : "none";
-}
-
-function confirmOrder() {
-    const name = document.getElementById("ord-name").value;
-    const addr = document.getElementById("ord-addr").value;
-    if(!name || !addr) return alert("Fill delivery info!");
-
-    let msg = `*New Order - Bsk Home Needs*\n\n*Customer:* ${name}\n*Address:* ${addr}\n\n*Items:*\n`;
-    let total = 0;
-    state.cart.forEach(p => {
-        msg += `- ${p.name} (₹${p.price})\n`;
-        total += (Number(p.price) + Number(p.del));
-    });
-    msg += `\n*Final Total:* ₹${total}`;
-    
-    window.open(`https://wa.me/918011924700?text=${encodeURIComponent(msg)}`);
-    state.cart = []; // Auto clear
-    updateBucketUI();
-}
-
-async function saveToCloud() {
-    const n = document.getElementById("p-name").value;
-    const p = document.getElementById("p-price").value;
-    const d = document.getElementById("p-del").value || 0;
-    const i = document.getElementById("p-img").value;
-    
-    if(!n || !p || !i) return alert("Fill all details!");
-    
-    state.products.push({name:n, price:p, del:d, img:i});
-    await fetch(API, {method:"POST", body:JSON.stringify(state.products)});
-    alert("Cloud Updated! Product is now LIVE.");
-    location.reload();
-}
-
-function adminLogin() {
-    if(document.getElementById("pass-in").value === "Bhashkar business") {
-        document.getElementById("admin-login").style.display = "none";
-        document.getElementById("admin-panel").style.display = "block";
-        renderAdminList();
     }
-}
 
-function renderAdminList() {
-    const list = document.getElementById("admin-list");
-    list.innerHTML = "";
-    state.products.forEach((p, i) => {
-        list.innerHTML += `<div style="display:flex;justify-content:space-between;padding:10px;background:#fff;margin-bottom:5px;border-radius:8px"><span>${p.name}</span><button onclick="delItem(${i})" style="color:red">Delete</button></div>`;
-    });
-}
+    function adminAuth() {
+        const pass = prompt("Enter Admin Password:");
+        // NEW PASSWORD CHECK
+        if(pass === "Bhashkar jyoti Roy") {
+            show('admin-page');
+            loadAdminPanel();
+        } else { alert("Incorrect Password!"); }
+    }
 
-async function delItem(i) {
-    if(!confirm("Remove from cloud?")) return;
-    state.products.splice(i, 1);
-    await fetch(API, {method:"POST", body:JSON.stringify(state.products)});
-    location.reload();
-}
+    function show(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+        document.getElementById(id).classList.add('active-page');
+    }
 
-function saveProfile() {
-    const n = document.getElementById("u-name").value;
-    const ph = document.getElementById("u-phone").value;
-    if(!n || !ph) return;
-    localStorage.setItem("bsk_user", JSON.stringify({name:n, phone:ph}));
-    location.reload();
-}
+    function renderItems(data) {
+        document.getElementById('product-grid').innerHTML = data.map(p => `
+            <div class="card">
+                <img src="${p.img}">
+                <p style="font-size:13px; margin:5px 0;"><b>${p.Name}</b></p>
+                <p style="color:#B12704;">₹${p.price}</p>
+                <button class="btn-amazon" style="font-size:10px; padding:6px;" onclick="addToCart('${p.Name}', ${p.price})">Add</button>
+            </div>
+        `).join('');
+    }
 
-function logout() { localStorage.removeItem("bsk_user"); location.reload(); }
-function show(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-}
-function doSearch() {
-    const q = document.getElementById("search-q").value.toLowerCase();
-    renderHome(state.products.filter(p => p.name.toLowerCase().includes(q)));
-}
+    function addToCart(n, p) { cart.push({n, p}); alert("Added!"); updateCartUI(); }
+    function updateCartUI() {
+        let t = cart.reduce((s, i) => s + i.p, 0);
+        document.getElementById('cart-items').innerHTML = cart.map(i => `<div>${i.n} - ₹${i.p}</div>`).join('') || "Empty";
+        document.getElementById('cart-total').innerText = "Total: ₹" + t;
+    }
 
-window.onload = init;
+    function openCheckout() {
+        if(!currentUser) return alert("Login first!");
+        document.getElementById('order-form').style.display = 'block';
+        document.getElementById('checkout-btn').style.display = 'none';
+    }
+
+    async function completeOrder() {
+        const n = document.getElementById('c-name').value, a = document.getElementById('c-addr').value, ph = document.getElementById('c-phone').value;
+        const details = cart.map(i => i.n).join(', '), total = cart.reduce((s, i) => s + i.p, 0);
+        await _supabase.from('orders').insert([{ customer_id: currentUser, order_details: details, total_price: total, customer_name: n, address: a, phone: ph }]);
+        window.open(`https://wa.me/91XXXXXXXXXX?text=Order Info: ${details} Total: ${total}`);
+        cart = []; updateCartUI(); show('shop-page');
+    }
+
+    async function loadAdminPanel() {
+        const { data: inv } = await _supabase.from('inventory').select('*');
+        document.getElementById('admin-inv-list').innerHTML = inv.map(p => `<div style="padding:5px; border-bottom:1px solid #ddd;">${p.Name} <button onclick="unlistProduct(${p.id})" style="color:red; float:right;">Unlist</button></div>`).join('');
+        const { data: ord } = await _supabase.from('orders').select('*').order('created_at', {ascending:false});
+        document.getElementById('admin-ord-list').innerHTML = ord.map(o => `<div class="card" style="text-align:left;"><b>${o.customer_name}</b><br>${o.order_details}</div>`).join('');
+    }
+
+    async function unlistProduct(id) { await _supabase.from('inventory').delete().eq('id', id); loadAdminPanel(); init(); }
+    async function uploadProduct() {
+        const n = document.getElementById('p-name').value, p = document.getElementById('p-price').value, i = document.getElementById('p-img').value, c = document.getElementById('p-cat').value;
+        await _supabase.from('inventory').insert([{ Name: n, price: p, img: i, category: c }]);
+        alert("Product Added!"); loadAdminPanel(); init();
+    }
+
+    function loginUser() { localStorage.setItem('bsk_id', document.getElementById('user-email').value); location.reload(); }
+    function logoutUser() { localStorage.removeItem('bsk_id'); location.reload(); }
+    function filterByCat(cat, el) {
+        document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        if(cat === 'All') renderItems(allItems);
+        else renderItems(allItems.filter(i => i.category === cat));
+    }
+    function filterProducts() {
+        const q = document.getElementById('search').value.toLowerCase();
+        renderItems(allItems.filter(i => i.Name.toLowerCase().includes(q)));
+    }
+    init();
 </script>
 </body>
 </html>

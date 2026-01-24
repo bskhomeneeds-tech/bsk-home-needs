@@ -8,90 +8,100 @@
     <style>
         :root { --amazon-blue: #232f3e; --amazon-orange: #ff9900; --bg: #f3f3f3; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); padding-bottom: 80px; }
-        header { background: var(--amazon-blue); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; }
+        header { background: var(--amazon-blue); color: white; padding: 12px; text-align: center; position: sticky; top: 0; z-index: 1000; }
         .page { display: none; padding: 12px; animation: fadeIn 0.3s; }
         .active-page { display: block !important; }
-        
-        /* Grid and Professional Card */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .card { background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
         
-        /* Fixed Image and Text height */
-        .product-img { width: 100%; height: 150px; object-fit: contain; background: #fff; display: block; border-bottom: 1px solid #f0f0f0; }
+        /* Fixed Design */
+        .card { background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
+        .product-img { width: 100%; height: 150px; object-fit: contain; background: white; display: block; }
         .product-info { padding: 8px; text-align: center; }
-        .p-name { font-size: 13px; font-weight: 600; color: #333; height: 32px; overflow: hidden; line-height: 1.2; margin-bottom: 4px; }
-        .p-price { color: #B12704; font-size: 16px; font-weight: bold; margin: 0; }
-        .p-delivery { color: #565959; font-size: 10px; margin-bottom: 8px; }
+        
+        .p-name { font-size: 14px; font-weight: bold; color: #333; margin: 5px 0; height: 35px; overflow: hidden; }
+        .p-price { color: #B12704; font-size: 17px; font-weight: bold; margin: 2px 0; }
+        .p-delivery { color: #565959; font-size: 11px; margin-bottom: 8px; }
 
-        .btn-buy { background: #fb641b; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .btn-cart { background: #ff9f00; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 4px; font-size: 12px; }
+        .btn-buy { background: #fb641b; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .btn-cart { background: #ff9f00; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 5px; }
         
         .search-container { display: flex; margin-bottom: 15px; }
-        .search-container input { border-radius: 4px 0 0 4px; border: 1px solid #ccc; padding: 10px; flex: 1; outline: none; }
-        .btn-search { background: var(--amazon-orange); border: none; padding: 10px 15px; border-radius: 0 4px 4px 0; cursor: pointer; font-weight: bold; }
+        .search-container input { border-radius: 5px 0 0 5px; border: 1px solid #ccc; padding: 10px; flex: 1; }
+        .btn-search { background: var(--amazon-orange); border: none; padding: 10px 15px; border-radius: 0 5px 5px 0; cursor: pointer; font-weight: bold; }
         
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #ddd; z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
         .nav-item { border: none; background: none; font-size: 11px; font-weight: bold; color: var(--amazon-blue); cursor: pointer; }
         
-        input, textarea { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .scroll-box { max-height: 250px; overflow-y: auto; border: 1px solid #eee; padding: 5px; border-radius: 5px; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<header><h2 style="margin:0;">Bsk home need's</h2></header>
+<header><h2>Bsk home need's</h2></header>
 
 <div id="shop-page" class="page active-page">
     <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search...">
+        <input type="text" id="search-input" placeholder="Search items...">
         <button class="btn-search" onclick="filter()">Search</button>
     </div>
-    <div id="product-grid" class="grid">Loading...</div>
+    <div id="product-grid" class="grid">Loading Products...</div>
 </div>
 
 <div id="cart-page" class="page">
-    <h3 style="text-align:center;">🛒 My Cart</h3>
-    <div id="cart-list" class="card" style="padding:10px; text-align:center;">Cart is empty</div>
-    <div id="cart-summary" style="margin: 15px 0; font-weight: bold; font-size: 18px; text-align: center; color: #B12704;">Total: ₹0</div>
-    <div class="card" style="padding:10px;">
-        <input type="text" id="cust-name" placeholder="Your Name">
-        <textarea id="cust-addr" placeholder="Full Address"></textarea>
-        <button class="btn-buy" onclick="placeBulkOrder()">📦 Confirm via WhatsApp</button>
+    <h3>🛒 Shopping Cart</h3>
+    <div id="cart-list" class="card" style="text-align: center;">Cart is empty</div>
+    <div id="cart-summary" style="margin: 15px 0; font-weight: bold; font-size: 18px; text-align: center;">Total: ₹0</div>
+    <div class="card">
+        <h4>📍 Delivery Details</h4>
+        <input type="text" id="cust-name" placeholder="Full Name">
+        <textarea id="cust-addr" placeholder="Address with PIN"></textarea>
+        <button class="btn-buy" onclick="placeBulkOrder()">📦 Confirm Order via WhatsApp</button>
     </div>
 </div>
 
 <div id="contact-page" class="page">
-    <div class="card" style="text-align: center; padding:20px;">
+    <div class="card" style="text-align: center;">
         <h2>Bsk home need's</h2>
         <p>Email: <b>bskhomeneeds@gmail.com</b></p>
     </div>
-    <div class="card" style="padding:15px;">
+    <div id="auth-section" class="card">
+        <input type="email" id="user-email" placeholder="Enter Email">
+        <button class="btn-buy" onclick="login()">Login</button>
+    </div>
+    <div id="user-section" class="card" style="display:none; text-align:center;">
+        <p id="display-user-email" style="font-weight:bold; color:green;"></p>
+        <button class="btn-buy" style="background:#666;" onclick="logout()">Logout</button>
+    </div>
+    <div class="card" style="text-align: center;">
         <button onclick="adminAuth()" class="btn-buy" style="background: var(--amazon-blue);">Admin Login</button>
     </div>
 </div>
 
 <div id="admin-dashboard" class="page">
-    <div class="card" style="padding:10px;">
-        <button class="btn-buy" onclick="show('admin-add')">➕ Add Product</button>
-        <button onclick="repairDB()" style="background:red; color:white; border:none; padding:10px; margin-top:8px; border-radius:4px; width:100%;">🛠 Fix Database</button>
+    <div class="card">
+        <button class="btn-buy" onclick="show('admin-add')">➕ Add New Product</button>
+        <button onclick="repairDB()" style="background:red; color:white; border:none; padding:12px; margin-top:10px; border-radius:5px; width:100%; font-weight:bold;">🛠 AUTO-FIX DATABASE</button>
     </div>
-    <div id="admin-product-list" style="margin-top:10px;"></div>
+    <h3>🛍 Active Products</h3>
+    <div id="admin-product-list" class="scroll-box card"></div>
 </div>
 
 <div id="admin-add" class="page">
-    <div class="card" style="padding:15px;">
-        <h3>Product Details</h3>
+    <div class="card">
+        <h3>Add Product</h3>
         <input type="text" id="p-name" placeholder="Name">
         <input type="number" id="p-price" placeholder="Price">
         <input type="number" id="p-del" placeholder="Delivery Charge">
-        <input type="text" id="p-img" placeholder="Image Link">
-        <button class="btn-buy" onclick="saveProduct()">Save</button>
-        <button onclick="show('admin-dashboard')" style="width:100%; border:none; background:none; margin-top:10px;">Cancel</button>
+        <input type="text" id="p-img" placeholder="Image URL">
+        <button class="btn-buy" onclick="saveProduct()">Add to Store</button>
+        <button onclick="show('admin-dashboard')" style="width:100%; background:none; border:none; margin-top:10px;">Cancel</button>
     </div>
 </div>
 
 <nav class="bottom-nav">
-    <button class="nav-item" onclick="show('shop-page')">🏠<br>Home</button>
+    <button class="nav-item" onclick="show('shop-page')">🏠<br>Shop</button>
     <button class="nav-item" onclick="show('cart-page')">🛒<br>Cart</button>
     <button class="nav-item" onclick="show('contact-page')">👤<br>Account</button>
 </nav>
@@ -102,12 +112,13 @@
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
     const MY_WA = "918001192470";
 
-    let items = [], cart = [];
+    let items = [], cart = [], user = localStorage.getItem('u_email');
 
     async function start() {
         const { data } = await _supabase.from('inventory').select('*');
         items = data || [];
         render(items);
+        updateUserUI();
     }
 
     function render(list) {
@@ -119,10 +130,10 @@
                     <div class="p-price">₹${p.price}</div>
                     <div class="p-delivery">Delivery: ₹${p.delivery_charge || 0}</div>
                     <button class="btn-cart" onclick="addCart('${p.Name}', ${p.price}, ${p.delivery_charge || 0})">Add</button>
-                    <button class="btn-buy" style="margin-top:4px;" onclick="buyNow('${p.Name}', ${p.price}, ${p.delivery_charge || 0})">Buy Now</button>
+                    <button class="btn-buy" style="margin-top:5px;" onclick="buyNow('${p.Name}', ${p.price}, ${p.delivery_charge || 0})">Buy Now</button>
                 </div>
             </div>
-        `).join('') || "<p style='text-align:center;'>No items.</p>";
+        `).join('') || "No items found.";
     }
 
     function filter() {
@@ -134,29 +145,41 @@
     function buyNow(n, p, d) { cart = [{n, p, d}]; updateCart(); show('cart-page'); }
     
     function updateCart() {
-        let total = cart.reduce((s, i) => s + i.p + i.d, 0);
-        document.getElementById('cart-list').innerHTML = cart.map(i => `<div style="padding:5px; border-bottom:1px solid #eee;">${i.n} - ₹${i.p}</div>`).join('') || "Empty";
-        document.getElementById('cart-summary').innerText = "Total: ₹" + total;
+        let t = cart.reduce((s, i) => s + i.p + i.d, 0);
+        document.getElementById('cart-list').innerHTML = cart.map(i => `<div>${i.n} - ₹${i.p}</div>`).join('') || "Cart is empty";
+        document.getElementById('cart-summary').innerText = "Total: ₹" + t;
     }
 
     async function placeBulkOrder() {
-        const n = document.getElementById('cust-name').value, a = document.getElementById('cust-addr').value;
-        if(cart.length === 0 || !n || !a) return alert("Fill all details!");
+        const name = document.getElementById('cust-name').value, addr = document.getElementById('cust-addr').value;
+        if(!user) return alert("Please login first!");
+        if(cart.length === 0 || !name || !addr) return alert("Fill all details!");
         const details = cart.map(i => i.n).join(', ');
         const total = cart.reduce((s, i) => s + i.p + i.d, 0);
-        window.open(`https://wa.me/${MY_WA}?text=New Order: ${details}%0ATotal: ₹${total}%0AName: ${n}%0AAddress: ${a}`);
+        await _supabase.from('orders').insert([{ customer_name: name, customer_email: user, order_details: details + " | Addr: " + addr, total_price: total }]);
+        window.open(`https://wa.me/${MY_WA}?text=Order from ${name}: ${details}. Total: ₹${total}. Addr: ${addr}`);
+        cart = []; updateCart();
+    }
+
+    function login() { user = document.getElementById('user-email').value; if(user) { localStorage.setItem('u_email', user); updateUserUI(); } }
+    function logout() { localStorage.removeItem('u_email'); user = null; updateUserUI(); }
+    function updateUserUI() {
+        if(user) { document.getElementById('auth-section').style.display='none'; document.getElementById('user-section').style.display='block'; document.getElementById('display-user-email').innerText=user; }
+        else { document.getElementById('auth-section').style.display='block'; document.getElementById('user-section').style.display='none'; }
     }
 
     function adminAuth() { if(prompt("Pass:") === "Bhashkar jyoti Roy") { show('admin-dashboard'); loadAdminData(); } }
     async function loadAdminData() {
         const { data } = await _supabase.from('inventory').select('*');
-        document.getElementById('admin-product-list').innerHTML = data?.map(p => `<div style="display:flex; justify-content:space-between; padding:10px; background:white; margin-bottom:5px; border-radius:4px;"><span>${p.Name}</span> <button onclick="unlist('${p.id}')" style="color:red; border:none; background:none;">Delete</button></div>`).join('');
+        document.getElementById('admin-product-list').innerHTML = data?.map(p => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${p.Name}</span> <button onclick="unlist('${p.id}')" style="background:red; color:white; border:none; padding:5px; border-radius:3px;">Del</button></div>`).join('');
     }
 
     async function saveProduct() {
         const n = document.getElementById('p-name').value, p = document.getElementById('p-price').value, d = document.getElementById('p-del').value, i = document.getElementById('p-img').value;
-        await _supabase.from('inventory').insert([{ Name: n, price: parseInt(p), delivery_charge: parseInt(d || 0), img: i }]);
-        alert("Saved!"); show('admin-dashboard'); start();
+        if(!n || !p || !i) return alert("Fill details!");
+        const { error } = await _supabase.from('inventory').insert([{ Name: n, price: parseInt(p), delivery_charge: parseInt(d || 0), img: i }]);
+        if(error) alert("Error: " + error.message);
+        else { alert("Product Added!"); show('admin-dashboard'); start(); }
     }
 
     async function unlist(id) { if(confirm("Delete?")) { await _supabase.from('inventory').delete().eq('id', id); loadAdminData(); start(); } }

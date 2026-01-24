@@ -3,112 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bskhomeneeds - Official</title>
+    <title>Bskhomeneeds - Official Store</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --amazon-blue: #232f3e; --amazon-orange: #ff9900; --bg: #f3f3f3; --red: #d9534f; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); padding-bottom: 80px; }
         header { background: var(--amazon-blue); color: white; padding: 12px; position: sticky; top: 0; z-index: 1000; text-align: center; }
+        
+        /* Search Box with Clear Button */
+        .search-container { display: flex; background: white; border-radius: 5px; margin: 10px auto; width: 95%; align-items: center; padding-right: 10px; }
+        #search { border: none; padding: 12px; outline: none; flex-grow: 1; border-radius: 5px; }
+        .clear-search { color: #888; cursor: pointer; font-size: 20px; display: none; padding: 0 10px; }
+
+        /* Category Scroller */
         .cat-bar { display: flex; overflow-x: auto; background: #37475a; padding: 10px; gap: 10px; white-space: nowrap; }
         .cat-bar::-webkit-scrollbar { display: none; }
         .cat-item { background: white; color: black; padding: 6px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; }
         .cat-item.active { background: var(--amazon-orange); color: white; }
-        .page { display: none; padding: 15px; }
+
+        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
         .active-page { display: block !important; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .btn-amazon { background: var(--amazon-orange); border: 1px solid #a88734; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; text-align: center; }
+        .card img { width: 100%; height: 110px; object-fit: contain; }
+        
+        .btn-amazon { background: var(--amazon-orange); border: 1px solid #a88734; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; color: #111; }
+        .btn-cancel { background: #e7e9ec; border: 1px solid #adb1b8; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
         .nav-item { border: none; background: none; font-size: 11px; font-weight: bold; color: var(--amazon-blue); cursor: pointer; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .scroll-box { max-height: 300px; overflow-y: auto; background: #f9f9f9; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
+        
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .scroll-box { max-height: 300px; overflow-y: auto; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <header>
     <h2 style="margin:0; color: var(--amazon-orange);">Bskhomeneeds</h2>
-    <input type="text" id="search" placeholder="🔍 Search products..." onkeyup="filterProducts()" style="width:90%; margin-top:10px; padding:8px; border:none; border-radius:5px;">
 </header>
 
-<div class="cat-bar">
+<div class="search-container">
+    <input type="text" id="search" placeholder="Search for products..." onkeyup="filterProducts()">
+    <span id="clear-search" class="clear-search" onclick="clearSearch()">×</span>
+</div>
+
+<div class="cat-bar" id="category-bar">
     <div class="cat-item active" onclick="filterByCat('All', this)">All</div>
     <div class="cat-item" onclick="filterByCat('Grocery', this)">Grocery</div>
     <div class="cat-item" onclick="filterByCat('Electronics', this)">Electronics</div>
-    <div class="cat-item" onclick="filterByCat('Kitchen', this)">Kitchen</div>
     <div class="cat-item" onclick="filterByCat('Fashion', this)">Fashion</div>
 </div>
 
 <div id="shop-page" class="page active-page">
-    <div id="product-grid" class="grid">Loading...</div>
+    <div id="product-grid" class="grid">Loading products...</div>
 </div>
 
 <div id="cart-page" class="page">
-    <h3>🛒 My Cart</h3>
-    <div id="cart-items" class="card">Cart is empty.</div>
-    <div id="cart-total" style="font-weight:bold; margin: 10px 0;"></div>
+    <h3>🛒 Your Cart</h3>
+    <div id="cart-items" class="card">Empty</div>
+    <div id="cart-total" style="font-weight:bold; margin: 15px 0;"></div>
     <div id="order-form" style="display:none;" class="card">
-        <input type="text" id="c-name" placeholder="Full Name">
-        <input type="text" id="c-addr" placeholder="Address">
-        <input type="text" id="c-phone" placeholder="Phone">
-        <button class="btn-amazon" onclick="completeOrder()">Order via WhatsApp</button>
+        <input type="text" id="cust-name" placeholder="Full Name">
+        <input type="text" id="cust-addr" placeholder="Full Address">
+        <input type="text" id="cust-phone" placeholder="Phone Number">
+        <button class="btn-amazon" onclick="sendOrder()">Confirm Order (WhatsApp)</button>
     </div>
-    <button id="checkout-btn" class="btn-amazon" onclick="openCheckout()">Proceed to Buy</button>
-    <button class="btn-amazon" style="background:#ddd; margin-top:10px;" onclick="show('orders-page')">📦 My Orders</button>
+    <button id="checkout-btn" class="btn-amazon" onclick="openForm()">Proceed to Checkout</button>
+    <button class="btn-cancel" onclick="show('orders-page')">My Past Orders</button>
 </div>
 
 <div id="orders-page" class="page">
-    <button onclick="show('cart-page')" style="border:none; background:none; color:blue;">← Back</button>
+    <button onclick="show('cart-page')" style="border:none; background:none; color:blue; font-weight:bold; cursor:pointer;">← Back to Cart</button>
     <h3>📦 Order History</h3>
-    <div id="my-orders-list" class="scroll-box">Login to see orders.</div>
+    <div id="past-orders-list" class="scroll-box">Please login to see history.</div>
 </div>
 
 <div id="contact-page" class="page">
     <div class="card" style="text-align: left;">
-        <h3>📧 Contact Support</h3>
+        <h3>📧 Contact</h3>
         <p>Email: <b>bskhomeneeds@gmail.com</b></p>
         <hr>
-        <div id="login-section">
-            <h4>👤 Create ID / Login</h4>
-            <input type="email" id="user-email" placeholder="Enter Gmail">
-            <button class="btn-amazon" onclick="loginUser()">Login</button>
+        <div id="login-ui">
+            <h4>👤 Login / Create ID</h4>
+            <input type="email" id="login-email" placeholder="Your Gmail">
+            <button class="btn-amazon" onclick="doLogin()">Login</button>
         </div>
-        <div id="profile-section" style="display:none;">
-            <p id="display-user"></p>
-            <button onclick="logoutUser()" style="color:red; cursor:pointer; background:none; border:none;">Logout</button>
+        <div id="profile-ui" style="display:none;">
+            <p id="user-display"></p>
+            <button class="btn-amazon" style="background:#f0c14b;" onclick="doLogout()">Logout</button>
         </div>
     </div>
 </div>
 
 <div id="admin-page" class="page">
-    <h3 style="text-align:center;">🛠 Admin Dashboard</h3>
-    <div class="card">
-        <h4>➕ Add Product</h4>
-        <input type="text" id="p-name" placeholder="Name">
-        <input type="number" id="p-price" placeholder="Price">
+    <h3 style="text-align:center;">🛠 Admin Control Panel</h3>
+    <div class="card" style="text-align: left;">
+        <h4>➕ List New Product</h4>
+        <input type="text" id="p-name" placeholder="Product Name">
+        <input type="number" id="p-price" placeholder="Price (₹)">
+        <input type="number" id="p-del" placeholder="Delivery Charge (Optional)">
+        <textarea id="p-desc" placeholder="Product Description..."></textarea>
         <input type="text" id="p-img" placeholder="Image URL">
         <select id="p-cat">
             <option value="Grocery">Grocery</option>
             <option value="Electronics">Electronics</option>
-            <option value="Kitchen">Kitchen</option>
             <option value="Fashion">Fashion</option>
         </select>
-        <button class="btn-amazon" onclick="uploadProduct()">Upload</button>
+        <button class="btn-amazon" onclick="uploadProduct()">List Product</button>
+        <button class="btn-cancel" onclick="cancelAdmin()">Cancel</button>
     </div>
     <div class="card">
-        <h4>📋 Inventory / Unlist</h4>
-        <div id="admin-inv-list" class="scroll-box"></div>
-    </div>
-    <div class="card">
-        <h4>📦 All Orders (Scroll)</h4>
-        <div id="admin-ord-list" class="scroll-box"></div>
+        <h4>📦 Recent Orders & Inventory</h4>
+        <div id="admin-orders" class="scroll-box"></div>
     </div>
 </div>
 
 <nav class="bottom-nav">
     <button class="nav-item" onclick="show('shop-page')">🏠<br>Home</button>
     <button class="nav-item" onclick="show('cart-page')">🛒<br>Cart</button>
-    <button class="nav-item" onclick="show('contact-page')">📧<br>Contact</button>
+    <button class="nav-item" onclick="show('contact-page')">📧<br>Account</button>
     <button class="nav-item" onclick="adminAuth()">⚙️<br>Admin</button>
 </nav>
 
@@ -117,26 +132,77 @@
     const SB_KEY = "sb_publishable_yyyMF6aEwhtYh4RHUFrIgA_OEU64IIX";
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    let allItems = [], cart = [], currentUser = localStorage.getItem('bsk_id');
+    let items = [], cart = [], user = localStorage.getItem('bsk_user');
 
-    async function init() {
-        const { data } = await _supabase.from('inventory').select('*');
-        allItems = data;
-        renderItems(data);
-        if(currentUser) {
-            document.getElementById('login-section').style.display='none';
-            document.getElementById('profile-section').style.display='block';
-            document.getElementById('display-user').innerText = "Logged as: " + currentUser;
-        }
+    async function load() {
+        try {
+            const { data } = await _supabase.from('inventory').select('*');
+            items = data || [];
+            render(items);
+            if(user) {
+                document.getElementById('login-ui').style.display = 'none';
+                document.getElementById('profile-ui').style.display = 'block';
+                document.getElementById('user-display').innerText = "Logged as: " + user;
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    function render(data) {
+        const grid = document.getElementById('product-grid');
+        if(!data.length) { grid.innerHTML = "No products found."; return; }
+        grid.innerHTML = data.map(p => `
+            <div class="card">
+                <img src="${p.img || 'https://via.placeholder.com/150'}">
+                <p style="font-size:13px; margin:5px 0;"><b>${p.Name}</b></p>
+                <p style="color:#B12704; font-weight:bold; margin:0;">₹${p.price}</p>
+                <p style="font-size:10px; color:gray;">+ ₹${p.delivery_charge || 0} Delivery</p>
+                <button class="btn-amazon" style="font-size:10px; padding:6px; margin-top:5px;" onclick="addCart('${p.Name}', ${p.price})">Add to Cart</button>
+            </div>
+        `).join('');
+    }
+
+    function filterProducts() {
+        const q = document.getElementById('search').value.toLowerCase();
+        const btn = document.getElementById('clear-search');
+        btn.style.display = q ? "block" : "none";
+        render(items.filter(i => i.Name.toLowerCase().includes(q)));
+    }
+
+    function clearSearch() {
+        document.getElementById('search').value = "";
+        document.getElementById('clear-search').style.display = "none";
+        render(items);
     }
 
     function adminAuth() {
-        const pass = prompt("Enter Admin Password:");
-        // NEW PASSWORD CHECK
-        if(pass === "Bhashkar jyoti Roy") {
+        if(prompt("Admin Password:") === "Bhashkar jyoti Roy") {
             show('admin-page');
-            loadAdminPanel();
-        } else { alert("Incorrect Password!"); }
+            loadAdminData();
+        } else { alert("Incorrect!"); }
+    }
+
+    async function uploadProduct() {
+        const n = document.getElementById('p-name').value, p = document.getElementById('p-price').value, d = document.getElementById('p-del').value, ds = document.getElementById('p-desc').value, i = document.getElementById('p-img').value, c = document.getElementById('p-cat').value;
+        if(!n || !p) return alert("Fill Name and Price");
+        await _supabase.from('inventory').insert([{ Name: n, price: p, delivery_charge: d || 0, description: ds, img: i, category: c }]);
+        alert("Product Live!"); location.reload();
+    }
+
+    function addCart(n, p) { cart.push({n, p}); alert("Added!"); updateCartUI(); }
+    function updateCartUI() {
+        let t = cart.reduce((s, i) => s + i.p, 0);
+        document.getElementById('cart-items').innerHTML = cart.map(i => `<div>${i.n} - ₹${i.p}</div>`).join('') || "Empty";
+        document.getElementById('cart-total').innerText = "Total: ₹" + t;
+    }
+
+    function openForm() { if(!user) return alert("Login first!"); document.getElementById('order-form').style.display='block'; }
+
+    async function sendOrder() {
+        const n = document.getElementById('cust-name').value, a = document.getElementById('cust-addr').value;
+        const details = cart.map(i => i.n).join(', '), total = cart.reduce((s, i) => s + i.p, 0);
+        await _supabase.from('orders').insert([{ customer_id: user, order_details: details, total_price: total, customer_name: n, address: a }]);
+        window.open(`https://wa.me/91XXXXXXXXXX?text=Order: ${details} Total: ${total}`);
+        cart = []; updateCartUI(); show('shop-page');
     }
 
     function show(id) {
@@ -144,65 +210,16 @@
         document.getElementById(id).classList.add('active-page');
     }
 
-    function renderItems(data) {
-        document.getElementById('product-grid').innerHTML = data.map(p => `
-            <div class="card">
-                <img src="${p.img}">
-                <p style="font-size:13px; margin:5px 0;"><b>${p.Name}</b></p>
-                <p style="color:#B12704;">₹${p.price}</p>
-                <button class="btn-amazon" style="font-size:10px; padding:6px;" onclick="addToCart('${p.Name}', ${p.price})">Add</button>
-            </div>
-        `).join('');
-    }
-
-    function addToCart(n, p) { cart.push({n, p}); alert("Added!"); updateCartUI(); }
-    function updateCartUI() {
-        let t = cart.reduce((s, i) => s + i.p, 0);
-        document.getElementById('cart-items').innerHTML = cart.map(i => `<div>${i.n} - ₹${i.p}</div>`).join('') || "Empty";
-        document.getElementById('cart-total').innerText = "Total: ₹" + t;
-    }
-
-    function openCheckout() {
-        if(!currentUser) return alert("Login first!");
-        document.getElementById('order-form').style.display = 'block';
-        document.getElementById('checkout-btn').style.display = 'none';
-    }
-
-    async function completeOrder() {
-        const n = document.getElementById('c-name').value, a = document.getElementById('c-addr').value, ph = document.getElementById('c-phone').value;
-        const details = cart.map(i => i.n).join(', '), total = cart.reduce((s, i) => s + i.p, 0);
-        await _supabase.from('orders').insert([{ customer_id: currentUser, order_details: details, total_price: total, customer_name: n, address: a, phone: ph }]);
-        window.open(`https://wa.me/91XXXXXXXXXX?text=Order Info: ${details} Total: ${total}`);
-        cart = []; updateCartUI(); show('shop-page');
-    }
-
-    async function loadAdminPanel() {
-        const { data: inv } = await _supabase.from('inventory').select('*');
-        document.getElementById('admin-inv-list').innerHTML = inv.map(p => `<div style="padding:5px; border-bottom:1px solid #ddd;">${p.Name} <button onclick="unlistProduct(${p.id})" style="color:red; float:right;">Unlist</button></div>`).join('');
-        const { data: ord } = await _supabase.from('orders').select('*').order('created_at', {ascending:false});
-        document.getElementById('admin-ord-list').innerHTML = ord.map(o => `<div class="card" style="text-align:left;"><b>${o.customer_name}</b><br>${o.order_details}</div>`).join('');
-    }
-
-    async function unlistProduct(id) { await _supabase.from('inventory').delete().eq('id', id); loadAdminPanel(); init(); }
-    async function uploadProduct() {
-        const n = document.getElementById('p-name').value, p = document.getElementById('p-price').value, i = document.getElementById('p-img').value, c = document.getElementById('p-cat').value;
-        await _supabase.from('inventory').insert([{ Name: n, price: p, img: i, category: c }]);
-        alert("Product Added!"); loadAdminPanel(); init();
-    }
-
-    function loginUser() { localStorage.setItem('bsk_id', document.getElementById('user-email').value); location.reload(); }
-    function logoutUser() { localStorage.removeItem('bsk_id'); location.reload(); }
+    function doLogin() { user = document.getElementById('login-email').value; localStorage.setItem('bsk_user', user); location.reload(); }
+    function doLogout() { localStorage.removeItem('bsk_user'); location.reload(); }
+    function cancelAdmin() { show('shop-page'); }
     function filterByCat(cat, el) {
         document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
-        if(cat === 'All') renderItems(allItems);
-        else renderItems(allItems.filter(i => i.category === cat));
+        render(cat === 'All' ? items : items.filter(i => i.category === cat));
     }
-    function filterProducts() {
-        const q = document.getElementById('search').value.toLowerCase();
-        renderItems(allItems.filter(i => i.Name.toLowerCase().includes(q)));
-    }
-    init();
+
+    load();
 </script>
 </body>
 </html>

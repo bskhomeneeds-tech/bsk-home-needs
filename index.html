@@ -2,183 +2,229 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bsk home need's</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bsk Home Needs - Official</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --amazon-blue: #232f3e; --amazon-orange: #ff9900; --bg: #f3f3f3; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); padding-bottom: 80px; }
-        header { background: var(--amazon-blue); color: white; padding: 10px; text-align: center; position: sticky; top: 0; z-index: 1000; }
-        .search-container { background: var(--amazon-blue); padding: 10px; display: flex; gap: 5px; position: sticky; top: 55px; z-index: 999; }
-        .search-container input { flex: 1; padding: 8px; border-radius: 4px; border: none; outline: none; }
-        .page { display: none; padding: 10px; animation: fadeIn 0.3s; }
+        :root { --p: #1a73e8; --s: #fb641b; --ok: #2e7d32; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); padding-bottom: 90px; }
+        header { background: var(--p); color: white; padding: 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .search-bar { background: white; border-radius: 8px; margin-top: 10px; padding: 8px; display: flex; align-items: center; }
+        .search-bar input { border: none; width: 100%; outline: none; padding-left: 10px; font-size: 14px; }
+        .page { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
         .active-page { display: block !important; }
-        
-        /* ग्रिड फिक्स: अब एक लाइन में 2 सामान दिखेंगे */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .card { background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 8px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
-        
-        /* इमेज साइज फिक्स: ताकि स्क्रीन पर एक साथ ज्यादा सामान दिखें */
-        .product-img { width: 100%; height: 100px; object-fit: contain; margin-bottom: 5px; background: #fff; }
-        
-        .p-name { font-size: 12px; font-weight: bold; height: 32px; overflow: hidden; line-height: 1.3; margin-bottom: 4px; }
-        .p-price { color: #B12704; font-size: 14px; font-weight: bold; margin-bottom: 5px; }
-        .qty-area { font-size: 11px; margin-bottom: 8px; }
-        .qty-input { width: 35px; padding: 2px; text-align: center; border: 1px solid #ccc; border-radius: 4px; }
-        
-        .btn-buy { background: #fb641b; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; margin-top: 4px; }
-        .btn-add-cart { background: var(--amazon-orange); color: black; border: none; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
-        .nav-item { border: none; background: none; font-size: 11px; font-weight: bold; color: var(--amazon-blue); cursor: pointer; }
-        input[type="text"], input[type="number"], input[type="email"], textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .order-box { border-left: 5px solid var(--amazon-orange); padding: 10px; margin-bottom: 10px; background: #fff; font-size: 12px; text-align: left; }
+        .box { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card { background: white; padding: 10px; border-radius: 12px; text-align: center; border: 1px solid #eee; }
+        .card img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; background: #f9f9f9; }
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn { background: var(--p); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .nav-i { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; color: #666; cursor: pointer; }
+        .active-nav { color: var(--p); font-weight: bold; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<header><h2>Bsk home need's</h2></header>
+<header>
+    <div style="font-weight:800; font-size:18px;">Bsk Home Need's</div>
+    <div class="search-bar">🔍 <input type="text" id="q" placeholder="Search products..." oninput="doSearch()"></div>
+</header>
 
-<div id="search-bar-ui" class="search-container">
-    <button onclick="resetSearch()" style="padding:8px; border-radius:4px; border:none; cursor:pointer;">🏠</button>
-    <input type="text" id="search-input" placeholder="Search products...">
-    <button onclick="searchProduct()" style="background:var(--amazon-orange); border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">Search</button>
+<div id="home" class="page active-page">
+    <div id="list" class="grid">Connecting to Cloud...</div>
 </div>
 
-<div id="shop-page" class="page active-page">
-    <div id="product-grid" class="grid">Loading...</div>
-</div>
-
-<div id="cart-page" class="page">
-    <h3 style="text-align:center;">🛒 Cart Checkout</h3>
-    <div id="cart-list" class="card" style="text-align:left;">Your cart is empty</div>
-    <div id="cart-summary" style="text-align:center; font-weight:bold; color:#B12704; font-size:18px; margin: 10px 0;">Total: ₹0</div>
-    <div id="order-form" style="display:none;">
-        <input type="text" id="cust-name" placeholder="Full Name">
-        <input type="number" id="cust-phone" placeholder="Phone Number">
-        <textarea id="cust-addr" placeholder="Full Delivery Address"></textarea>
-        <button class="btn-buy" onclick="placeOrderDB()">✅ Confirm Order</button>
-    </div>
-    <div id="login-remind" class="card" style="color:red; display:none;">Login in Account page to place order!</div>
-</div>
-
-<div id="contact-page" class="page">
-    <div class="card"><h3>About Us</h3><p>Email: bskhomeneeds@gmail.com</p></div>
-    <div id="auth-section" class="card">
-        <h4>User Login</h4><input type="email" id="user-email" placeholder="Gmail ID"><button class="btn-buy" onclick="login()">Login</button>
-    </div>
-    <div id="user-section" style="display:none;">
-        <div class="card">
-            <h4>My Profile</h4>
-            <p>ID: <span style="background:#eee;padding:2px 5px;border-radius:4px;font-family:monospace;" id="display-user-id"></span></p>
-            <p>Email: <b id="display-user-email"></b></p>
-            <button onclick="logout()">Logout</button>
-        </div>
-        <h3>📦 My Orders</h3><div id="my-orders-list"></div>
-    </div>
-    <button onclick="adminAuth()" style="background:#232f3e; color:white; width:100%; padding:12px; border-radius:4px; margin-top:20px; border:none; font-weight:bold;">Admin Panel</button>
-</div>
-
-<div id="admin-dashboard" class="page">
-    <button onclick="magicFix()" style="background:purple; color:white; width:100%; padding:10px; border:none; border-radius:4px; font-weight:bold; margin-bottom:10px;">✨ Magic Fix</button>
-    <button class="btn-buy" style="background:green;" onclick="show('admin-add')">➕ Add Product</button>
-    <h3>📥 Orders</h3><div id="admin-orders-list"></div>
-</div>
-
-<div id="admin-add" class="page">
-    <div class="card">
-        <input type="text" id="p-name" placeholder="Name"><input type="number" id="p-price" placeholder="Price"><input type="text" id="p-img" placeholder="Image URL"><button class="btn-buy" onclick="saveProduct()">Save</button>
-        <button onclick="show('admin-dashboard')" style="background:none; border:none; margin-top:10px;">Back</button>
+<div id="cart" class="page">
+    <div class="box">
+        <h3 style="margin-top:0;">My Basket 🛒</h3>
+        <div id="cart-content">Basket is empty</div>
+        <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+        <h4 id="total">Total: ₹0</h4>
+        <input type="text" id="addr" placeholder="Enter Full Delivery Address">
+        <button class="btn" onclick="sendOrder()">Place Order</button>
     </div>
 </div>
 
-<nav class="bottom-nav">
-    <button class="nav-item" onclick="show('shop-page')">🏠<br>Home</button>
-    <button class="nav-item" onclick="show('cart-page')">🛒<br>Cart</button>
-    <button class="nav-item" onclick="show('contact-page')">👤<br>Account</button>
+<div id="acc" class="page">
+    <div class="box">
+        <h4>User Profile</h4>
+        <input type="text" id="un" placeholder="Name">
+        <input type="number" id="up" placeholder="Phone">
+        <button class="btn" onclick="saveMe()">Save Profile</button>
+    </div>
+    <div class="box" style="background:#f9f9f9;">
+        <h4>Admin Access</h4>
+        <input type="password" id="pass" placeholder="Admin Key">
+        <button class="btn" style="background:#333" onclick="goAdmin()">Login as Admin</button>
+    </div>
+</div>
+
+<div id="admin" class="page">
+    <div class="box">
+        <h4>Add New Product</h4>
+        <input type="text" id="pn" placeholder="Product Name">
+        <input type="number" id="pp" placeholder="Price">
+        <input type="number" id="ps" placeholder="Delivery Charge">
+        <input type="text" id="pi" placeholder="Image Link (URL)">
+        <button class="btn" style="background:var(--ok)" onclick="addProd()">SAVE TO CLOUD</button>
+    </div>
+    <div class="box">
+        <h4>Manage Store</h4>
+        <div id="adm-inv" style="max-height: 250px; overflow: auto;"></div>
+    </div>
+    <div class="box">
+        <h4>Customer Orders</h4>
+        <div id="adm-orders" style="max-height: 250px; overflow: auto;"></div>
+    </div>
+    <button class="btn" style="background:#666" onclick="show('acc')">Back</button>
+</div>
+
+<nav>
+    <div class="nav-i active-nav" id="n-home" onclick="show('home')">🏠<br>Home</div>
+    <div class="nav-i" id="n-cart" onclick="show('cart')">🛒<br>Cart</div>
+    <div class="nav-i" id="n-acc" onclick="show('acc')">👤<br>Account</div>
 </nav>
 
 <script>
-    const SB_URL = "https://lfxorgprrgpkkiqdjqdb.supabase.co", SB_KEY = "sb_publishable_yyyMF6aEwhtYh4RHUFrIgA_OEU64IIX";
-    const _supabase = supabase.createClient(SB_URL, SB_KEY);
-    let allItems = [], cart = [], user = localStorage.getItem('u_email');
+    const S_URL = "https://lfxorgprrgpkkiqdjqdb.supabase.co";
+    const S_KEY = "sb_publishable_yyyMF6aEwhtYh4RHUFrIgA_OEU64IIX";
+    const _sb = supabase.createClient(S_URL, S_KEY);
 
-    function magicFix() { alert("System Refreshed!"); start(); }
+    let prods = [];
+    let myCart = [];
 
-    async function start() {
-        const { data } = await _supabase.from('inventory').select('*');
-        allItems = data || []; render(allItems); updateUserUI();
+    async function sync() {
+        const { data, error } = await _sb.from('inventory').select('*').order('created_at', {ascending:false});
+        if(data) { prods = data; render(prods); updateAdm(); }
+        if(error) console.error("Fetch Error:", error);
     }
 
-    function render(list) {
-        document.getElementById('product-grid').innerHTML = list.map(p => `
-            <div class="card">
-                <img src="${p.img}" class="product-img">
-                <div class="p-name">${p.Name}</div>
-                <div class="p-price">₹${p.price}</div>
-                <div class="qty-area">Qty: <input type="number" id="qty-${p.id}" class="qty-input" value="1" min="1"></div>
-                <button class="btn-add-cart" onclick="addCart('${p.id}', '${p.Name}', ${p.price})">Add</button>
-                <button class="btn-buy" onclick="buyNow('${p.id}', '${p.Name}', ${p.price})">Buy</button>
-            </div>`).join('') || "No items.";
+    function render(arr) {
+        document.getElementById('list').innerHTML = arr.map(p => {
+            const name = p.name || p.Name || "No Name";
+            const price = p.price || 0;
+            const img = p.image_url || 'https://via.placeholder.com/150';
+            return `
+                <div class="card">
+                    <img src="${img}" onerror="this.src='https://via.placeholder.com/150'">
+                    <div style="font-weight:bold; margin:8px 0 4px; font-size:14px;">${name}</div>
+                    <div style="color:var(--ok); font-weight:bold;">₹${price}</div>
+                    <button onclick="buy(${p.id})" style="background:var(--s); border:none; color:white; padding:8px; border-radius:8px; width:100%; margin-top:8px; cursor:pointer; font-weight:bold;">Add</button>
+                </div>
+            `;
+        }).join('') || "No products found.";
     }
 
-    function addCart(id, n, p) { let q = document.getElementById('qty-'+id).value; cart.push({n, p, q: parseInt(q)}); updateCart(); alert(n + " Added!"); }
-    function buyNow(id, n, p) { let q = document.getElementById('qty-'+id).value; cart.push({n, p, q: parseInt(q)}); updateCart(); show('cart-page'); }
+    async function addProd() {
+        const n = document.getElementById('pn').value;
+        const p = document.getElementById('pp').value;
+        const s = document.getElementById('ps').value;
+        const i = document.getElementById('pi').value;
 
-    function updateCart() {
-        let t = cart.reduce((s, i) => s + (i.p * i.q), 0);
-        document.getElementById('cart-list').innerHTML = cart.map(i => `<div style="border-bottom:1px solid #eee;padding:5px;">${i.n} (x${i.q}) - ₹${i.p * i.q}</div>`).join('') || "Cart Empty";
-        document.getElementById('cart-summary').innerText = "Total: ₹" + t;
-        document.getElementById('order-form').style.display = (user && cart.length > 0) ? 'block' : 'none';
-        document.getElementById('login-remind').style.display = user ? 'none' : 'block';
-    }
+        if(!n || !p) return alert("Fill Name and Price!");
 
-    async function placeOrderDB() {
-        const n = document.getElementById('cust-name').value, ph = document.getElementById('cust-phone').value, a = document.getElementById('cust-addr').value;
-        if(!n || !ph || !a) return alert("Fill details!");
-        const details = cart.map(i => `${i.n} (x${i.q})`).join(', ');
-        await _supabase.from('orders').insert([{ customer_name: n, customer_email: user, order_details: `ITEMS: ${details} | PH: ${ph} | ADDR: ${a}`, total_price: cart.reduce((s, i) => s + (i.p * i.q), 0), status: 'Pending' }]);
-        alert("Order Successful!"); cart = []; updateCart(); location.reload();
+        const { error } = await _sb.from('inventory').insert([{ name: n, price: parseInt(p), delivery_charge: parseInt(s || 0), image_url: i }]);
+        if (error) alert("Error: " + error.message);
+        else { alert("Product Added!"); sync(); }
     }
 
-    function login() { let m = document.getElementById('user-email').value; if(m.includes("@")) { user = m; localStorage.setItem('u_email', m); updateUserUI(); } }
-    function logout() { localStorage.removeItem('u_email'); user = null; location.reload(); }
-    function updateUserUI() {
-        if(user) { 
-            document.getElementById('auth-section').style.display='none'; document.getElementById('user-section').style.display='block'; 
-            document.getElementById('display-user-email').innerText = user;
-            document.getElementById('display-user-id').innerText = "CUST-" + btoa(user).substring(0, 6).toUpperCase();
-            loadMyOrders(); 
-        } else { document.getElementById('auth-section').style.display='block'; document.getElementById('user-section').style.display='none'; }
-        updateCart();
+    function buy(id) {
+        const item = prods.find(x => x.id === id);
+        myCart.push(item);
+        alert((item.name || item.Name) + " Added!");
+        calc();
     }
 
-    async function loadMyOrders() {
-        const { data } = await _supabase.from('orders').select('*').eq('customer_email', user).order('created_at', {ascending: false});
-        document.getElementById('my-orders-list').innerHTML = data?.map(o => `
-            <div class="order-box">
-                <b>${o.order_details.split('|')[0]}</b><br>Total: ₹${o.total_price} | Status: <b>${o.status}</b><br>
-                ${o.status === 'Pending' ? `<button onclick="cancelOrder('${o.id}')" style="color:red;border:none;background:none;padding:0;font-weight:bold;cursor:pointer;">Cancel Order</button>` : ''}
-            </div>`).join('') || "No orders.";
+    function calc() {
+        let t = 0;
+        document.getElementById('cart-content').innerHTML = myCart.map((c, index) => {
+            t += (parseInt(c.price) + parseInt(c.delivery_charge || 0));
+            return `<div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:14px;">
+                        <span>${c.name || c.Name}</span>
+                        <span>₹${c.price} <span onclick="rem(${index})" style="color:red; margin-left:10px;">✕</span></span>
+                    </div>`;
+        }).join('');
+        document.getElementById('total').innerText = "Total: ₹" + t;
     }
 
-    async function cancelOrder(id) { if(confirm("Cancel?")) { await _supabase.from('orders').delete().eq('id', id); loadMyOrders(); } }
-    function adminAuth() { if(prompt("Pass:") === "Bhashkar jyoti Roy") { show('admin-dashboard'); loadOrders(); } }
-    async function loadOrders() {
-        const { data } = await _supabase.from('orders').select('*').order('created_at', {ascending: false});
-        document.getElementById('admin-orders-list').innerHTML = data?.map(o => `<div class="order-box"><b>${o.customer_name}</b><br>${o.order_details}<br>Status: ${o.status}<br><button onclick="markDel('${o.id}')">Deliver</button></div>`).join('');
+    function rem(idx) { myCart.splice(idx, 1); calc(); }
+
+    async function sendOrder() {
+        const adr = document.getElementById('addr').value;
+        const un = localStorage.getItem('bsk_n');
+        if(!un || !adr || myCart.length === 0) return alert("Profile/Address/Cart Empty!");
+
+        const itemsStr = myCart.map(c => c.name || c.Name).join(', ');
+        const total = document.getElementById('total').innerText;
+
+        const { error } = await _sb.from('orders').insert([{
+            customer_name: un, phone: localStorage.getItem('bsk_p'), address: adr, items: itemsStr, total_price: total
+        }]);
+
+        if(!error) { alert("Order Placed!"); myCart = []; calc(); }
+        else alert("Error: " + error.message);
     }
-    async function markDel(id) { await _supabase.from('orders').update({status:'Delivered'}).eq('id',id); loadOrders(); }
-    async function saveProduct() {
-        const n=document.getElementById('p-name').value, p=document.getElementById('p-price').value, i=document.getElementById('p-img').value;
-        await _supabase.from('inventory').insert([{Name:n, price:parseInt(p), img:i}]); start(); show('admin-dashboard');
+
+    function doSearch() {
+        const val = document.getElementById('q').value.toLowerCase();
+        const res = prods.filter(p => (p.name || p.Name).toLowerCase().includes(val));
+        render(res);
     }
-    function searchProduct() { const q = document.getElementById('search-input').value.toLowerCase(); render(allItems.filter(i => i.Name.toLowerCase().includes(q))); show('shop-page'); }
-    function resetSearch() { document.getElementById('search-input').value=""; render(allItems); show('shop-page'); }
-    function show(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); document.getElementById(id).classList.add('active-page'); document.getElementById('search-bar-ui').style.display = (id==='shop-page') ? 'flex' : 'none'; }
-    start();
+
+    function goAdmin() {
+        if(document.getElementById('pass').value === "Bhashkar jyoti Roy") {
+            show('admin');
+            fetchOrders();
+        } else alert("Wrong Pass!");
+    }
+
+    async function fetchOrders() {
+        const { data } = await _sb.from('orders').select('*').order('created_at', {ascending:false});
+        if(data) {
+            document.getElementById('adm-orders').innerHTML = data.map(o => `
+                <div style="background:#f1f1f1; padding:10px; border-radius:8px; margin-bottom:10px; font-size:12px;">
+                    <b>${o.customer_name}</b> - ${o.items}<br>
+                    Addr: ${o.address} | Total: ${o.total_price}
+                </div>
+            `).join('') || "No orders.";
+        }
+    }
+
+    function updateAdm() {
+        document.getElementById('adm-inv').innerHTML = prods.map(p => `
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding:8px; font-size:13px;">
+                <span>${p.name || p.Name}</span>
+                <button onclick="del(${p.id})" style="color:red; border:none; background:none;">Delete</button>
+            </div>
+        `).join('');
+    }
+
+    async function del(id) {
+        if(confirm("Delete?")) { await _sb.from('inventory').delete().eq('id', id); sync(); }
+    }
+
+    function saveMe() {
+        localStorage.setItem('bsk_n', document.getElementById('un').value);
+        localStorage.setItem('bsk_p', document.getElementById('up').value);
+        alert("Saved!");
+    }
+
+    function show(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+        document.getElementById(id).classList.add('active-page');
+        document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active-nav'));
+        if(id === 'home') document.getElementById('n-home').classList.add('active-nav');
+    }
+
+    window.onload = () => {
+        document.getElementById('un').value = localStorage.getItem('bsk_n') || "";
+        document.getElementById('up').value = localStorage.getItem('bsk_p') || "";
+        sync();
+    };
 </script>
 </body>
 </html>
 
+    

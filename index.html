@@ -3,392 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bsk home needs</title>
+    <title>Bsk Home Needs</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
-        header { background-color: #007bff; color: white; padding: 10px; text-align: center; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .search-bar { margin-bottom: 20px; text-align: center; }
-        .search-bar input { padding: 10px; width: 300px; }
-        .search-bar button { padding: 10px; background-color: #28a745; color: white; border: none; cursor: pointer; }
-        .products { display: flex; flex-wrap: wrap; gap: 20px; }
-        .product { background: white; padding: 15px; border: 1px solid #ddd; border-radius: 5px; width: 200px; text-align: center; }
-        .product img { width: 100%; height: 150px; object-fit: cover; }
-        .product button { margin-top: 10px; padding: 5px 10px; background-color: #007bff; color: white; border: none; cursor: pointer; }
-        .icons { position: fixed; bottom: 10px; left: 10px; display: flex; gap: 20px; }
-        .icon { font-size: 24px; cursor: pointer; padding: 10px; background: white; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.3); }
-        .hidden { display: none; }
-        .login-form, .admin-form, .order-form, .add-product-form { background: white; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 400px; margin: 20px auto; }
-        .login-form input, .admin-form input, .order-form input, .order-form textarea, .add-product-form input { display: block; width: 100%; margin-bottom: 10px; padding: 10px; }
-        .login-form button, .admin-form button, .order-form button, .add-product-form button { padding: 10px; background-color: #28a745; color: white; border: none; cursor: pointer; width: 100%; }
-        .admin-panel { margin-top: 20px; }
-        .admin-panel .product { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .orders { max-height: 400px; overflow-y: scroll; }
-        .order { background: white; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; }
-        .bucket-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .back-btn { margin-top: 10px; padding: 10px; background-color: #dc3545; color: white; border: none; cursor: pointer; }
+        :root { --primary: #28a745; --light: #f4f7f6; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--light); padding-bottom: 75px; }
+        header { background: var(--primary); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; }
+        .page { display: none; padding: 15px; }
+        .active { display: block; }
+        
+        /* Search & Categories */
+        .search-container { display: flex; gap: 5px; margin-bottom: 10px; }
+        .search-container input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+        .cat-bar { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; scrollbar-width: none; }
+        .cat-item { background: white; padding: 8px 15px; border-radius: 20px; border: 1px solid #ddd; white-space: nowrap; cursor: pointer; }
+        .cat-active { background: var(--primary); color: white; }
+
+        /* Product Cards */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card { background: white; padding: 10px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #eee; }
+        .card img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; }
+        
+        /* Buttons & Forms */
+        .btn { border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; }
+        .btn-main { background: var(--primary); color: white; }
+        .btn-outline { background: none; border: 1px solid var(--primary); color: var(--primary); }
+        .input-f { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+
+        /* Nav */
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; }
+        .nav-btn { background: none; border: none; font-size: 11px; color: #666; cursor: pointer; }
+        
+        .status-badge { font-size: 10px; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
+        .pending { background: #fff3cd; color: #856404; }
+        .cancelled { background: #f8d7da; color: #721c24; }
+        .delivered { background: #d4edda; color: #155724; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Bsk home needs</h1>
-    </header>
-    <div class="container">
-        <!-- Login Page -->
-        <div id="login-page">
-            <div class="login-form">
-                <h2>Login</h2>
-                <input type="text" id="phone" placeholder="Phone Number (10 digits)" maxlength="10" pattern="[0-9]{10}" required>
-                <input type="password" id="password" placeholder="Password" required>
-                <button onclick="login()">Login</button>
-            </div>
-        </div>
 
-        <!-- Home Page -->
-        <div id="home-page" class="hidden">
-            <div class="search-bar">
-                <input type="text" id="search-input" placeholder="Search products...">
-                <button onclick="searchProduct()">Search</button>
-            </div>
-            <div id="search-result" class="hidden">
-                <!-- Search result will be shown here -->
-                <button class="back-btn" onclick="clearSearch()">Back to Home</button>
-            </div>
-            <div class="products" id="products-list">
-                <!-- Products will be loaded here -->
-            </div>
-        </div>
+<header>
+    <h1 style="margin:0; font-size: 20px;">Bsk Home Needs</h1>
+    <div id="user-welcome" style="font-size: 11px; opacity: 0.9;"></div>
+</header>
 
-        <!-- Contact Page -->
-        <div id="contact-page" class="hidden">
-            <h2>Contact Us</h2>
-            <p>Email: bskhomeneeds@gmail.com</p>
-            <button class="back-btn" onclick="showPage('home-page')">Back to Home</button>
-        </div>
-
-        <!-- Admin Page -->
-        <div id="admin-page" class="hidden">
-            <div class="admin-form">
-                <h2>Admin Login</h2>
-                <input type="password" id="admin-password" placeholder="Password" required>
-                <button onclick="adminLogin()">Login</button>
-            </div>
-            <div id="admin-panel" class="hidden">
-                <h2>Admin Panel</h2>
-                <button onclick="showAddProductForm()">Add Product</button>
-                <div id="add-product-form" class="hidden add-product-form">
-                    <h3>Add New Product</h3>
-                    <input type="text" id="product-name" placeholder="Product Name" required>
-                    <input type="number" id="product-price" placeholder="Price in ₹" required>
-                    <input type="number" id="product-delivery" placeholder="Delivery Charge in ₹" required>
-                    <input type="file" id="product-image" accept="image/*" required>
-                    <button onclick="addProduct()">Submit</button>
-                    <button class="back-btn" onclick="hideAddProductForm()">Cancel</button>
-                </div>
-                <h3>Manage Products</h3>
-                <div id="admin-products"></div>
-                <h3>Orders</h3>
-                <div class="orders" id="admin-orders">
-                    <!-- Orders will be loaded here -->
-                </div>
-                <button class="back-btn" onclick="showPage('home-page')">Back to Home</button>
-            </div>
-        </div>
-
-        <!-- Bucket Page -->
-        <div id="bucket-page" class="hidden">
-            <h2>Your Bucket</h2>
-            <div id="bucket-items"></div>
-            <button onclick="showOrderForm()">Order All</button>
-            <button class="back-btn" onclick="showPage('home-page')">Back to Home</button>
-        </div>
-
-        <!-- Order Form -->
-        <div id="order-form" class="hidden">
-            <div class="order-form">
-                <h2>Place Order</h2>
-                <input type="text" id="order-name" placeholder="Name" required>
-                <input type="text" id="order-phone" placeholder="Phone Number (10 digits)" maxlength="10" pattern="[0-9]{10}" required>
-                <textarea id="order-address" placeholder="Address" required></textarea>
-                <div id="order-summary"></div>
-                <button onclick="placeOrder()">Place Order</button>
-                <button class="back-btn" onclick="showPage('bucket-page')">Back</button>
-            </div>
-        </div>
-
-        <!-- My Orders Page -->
-        <div id="my-orders-page" class="hidden">
-            <h2>My Orders</h2>
-            <div id="my-orders-list"></div>
-            <button class="back-btn" onclick="showPage('home-page')">Back to Home</button>
-        </div>
+<div id="home" class="page active">
+    <div class="search-container">
+        <input type="text" id="search-in" placeholder="Saman ka naam...">
+        <button class="btn-main" style="width:auto; padding:0 15px;" onclick="search()">Search</button>
     </div>
-
-    <!-- Icons at Bottom Left -->
-    <div class="icons">
-        <div class="icon" onclick="showPage('contact-page')">✉️</div>
-        <div class="icon" onclick="showPage('admin-page')">👤</div>
-        <div class="icon" onclick="showPage('bucket-page')">🛒</div>
-        <div class="icon" onclick="showPage('my-orders-page')">🎒</div>
+    <div class="cat-bar" id="cats">
+        <div class="cat-item cat-active" onclick="filterCat('All', this)">All</div>
+        <div class="cat-item" onclick="filterCat('Grocery', this)">Grocery</div>
+        <div class="cat-item" onclick="filterCat('Fresh', this)">Fresh</div>
+        <div class="cat-item" onclick="filterCat('Snacks', this)">Snacks</div>
     </div>
+    <div id="product-grid" class="grid"></div>
+</div>
 
-    <script>
-        // Load data from localStorage or initialize empty
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        let orders = JSON.parse(localStorage.getItem('orders')) || [];
-        let bucket = [];
-        let loggedIn = false;
-        let userPhone = '';
+<div id="cart" class="page">
+    <h3>🛒 Mera Bucket</h3>
+    <div id="bucket-items"></div>
+    <div id="checkout" style="display:none; margin-top:15px;">
+        <h4 id="total-text">Total: ₹0</h4>
+        <button class="btn btn-main" onclick="confirmOrder()">Confirm Order</button>
+    </div>
+    <hr style="margin:25px 0;">
+    <h3>🎒 My Order History</h3>
+    <div id="my-orders"></div>
+</div>
 
-        // Save data to localStorage
-        function saveData() {
-            localStorage.setItem('products', JSON.stringify(products));
-            localStorage.setItem('orders', JSON.stringify(orders));
-        }
+<div id="admin" class="page">
+    <h3>Admin Login</h3>
+    <div id="admin-auth">
+        <input type="password" id="a-pass" class="input-f" placeholder="Password">
+        <button class="btn btn-main" onclick="adminLogin()">Login</button>
+    </div>
+    <div id="admin-panel" style="display:none;">
+        <button class="btn btn-main" onclick="toggleAdminView('add')">Add Product</button>
+        <button class="btn btn-main" onclick="toggleAdminView('orders')">Manage Orders</button>
+        <button class="btn btn-outline" onclick="toggleAdminView('list')">Unlist Saman</button>
+        
+        <div id="admin-add" style="display:none; margin-top:15px;">
+            <input id="p-name" class="input-f" placeholder="Name">
+            <input id="p-price" class="input-f" type="number" placeholder="Price">
+            <input id="p-del" class="input-f" type="number" placeholder="Delivery Charge">
+            <input id="p-img" class="input-f" placeholder="Image URL">
+            <select id="p-cat" class="input-f">
+                <option value="Grocery">Grocery</option><option value="Fresh">Fresh</option><option value="Snacks">Snacks</option>
+            </select>
+            <button class="btn btn-main" onclick="saveProduct()">Save Product</button>
+        </div>
+        <div id="admin-orders" style="display:none;"></div>
+        <div id="admin-list" style="display:none;"></div>
+    </div>
+</div>
 
-        // Check if logged in on load
-        window.onload = function() {
-            if (localStorage.getItem('loggedIn') === 'true') {
-                loggedIn = true;
-                userPhone = localStorage.getItem('userPhone');
-                showPage('home-page');
-                loadProducts();
-            } else {
-                showPage('login-page');
-            }
-        };
+<div id="profile" class="page">
+    <h3>Contact Us</h3>
+    <p>Email: bskhomeneeds@gmail.com</p>
+    <hr>
+    <div id="login-section">
+        <h3>Login / Create ID</h3>
+        <input id="u-name" class="input-f" placeholder="Full Name">
+        <input id="u-phone" class="input-f" placeholder="Phone Number">
+        <input id="u-pass" type="password" class="input-f" placeholder="Set Password">
+        <button class="btn btn-main" onclick="register()">Register & Login</button>
+    </div>
+    <div id="logout-section" style="display:none;">
+        <button class="btn btn-outline" onclick="logout()">Logout From Account</button>
+    </div>
+</div>
 
-        function showPage(pageId) {
-            document.querySelectorAll('.container > div').forEach(div => div.classList.add('hidden'));
-            document.getElementById(pageId).classList.remove('hidden');
-            if (pageId === 'bucket-page') loadBucket();
-            if (pageId === 'my-orders-page') loadMyOrders();
-            if (pageId === 'admin-panel') {
-                loadAdminProducts();
-                loadAdminOrders(); // Immediate load
-            }
-        }
+<div class="nav">
+    <button class="nav-btn" onclick="show('home')">🏠<br>Home</button>
+    <button class="nav-btn" onclick="show('cart')">🛒<br>Bucket</button>
+    <button class="nav-btn" onclick="show('admin')">👤<br>Admin</button>
+    <button class="nav-btn" onclick="show('profile')">📞<br>Contact</button>
+</div>
 
-        function login() {
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
-            if (phone.length === 10 && /^\d+$/.test(phone) && password) {
-                loggedIn = true;
-                userPhone = phone;
-                localStorage.setItem('loggedIn', 'true');
-                localStorage.setItem('userPhone', phone);
-                showPage('home-page');
-                loadProducts();
-            } else {
-                alert('Invalid phone or password');
-            }
-        }
+<script>
+const DB = "bsk_vfinal_2026";
+const API = (key) => `https://kvdb.io/${DB}/${key}`;
+let state = { products: [], orders: [], cart: [], user: null, cat: 'All' };
 
-        function loadProducts() {
-            const list = document.getElementById('products-list');
-            list.innerHTML = '';
-            products.filter(p => p.listed).forEach(p => {
-                list.innerHTML += `
-                    <div class="product">
-                        <img src="${p.image}" alt="${p.name}">
-                        <h3>${p.name}</h3>
-                        <p>₹${p.price}</p>
-                        <input type="number" id="qty-${p.id}" min="1" value="1">
-                        <button onclick="addToBucket(${p.id})">Add to Bucket</button>
-                        <button onclick="orderNow(${p.id})">Order Now</button>
-                    </div>
-                `;
-            });
-        }
+async function init() {
+    const saved = localStorage.getItem('bsk_user');
+    if(saved) {
+        state.user = JSON.parse(saved);
+        document.getElementById('user-welcome').innerText = "Hello, " + state.user.name;
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('logout-section').style.display = 'block';
+    }
+    await sync();
+}
 
-        function addToBucket(id) {
-            const qty = parseInt(document.getElementById(`qty-${id}`).value);
-            if (qty > 0) {
-                const product = products.find(p => p.id === id);
-                bucket.push({ ...product, qty });
-                alert('Added to bucket');
-            }
-        }
+async function sync() {
+    try {
+        const p = await fetch(API('inventory'));
+        state.products = p.ok ? await p.json() : [];
+        const o = await fetch(API('orders'));
+        state.orders = o.ok ? await o.json() : [];
+        render();
+    } catch(e) { console.log("Offline or empty"); }
+}
 
-        function orderNow(id) {
-            const qty = parseInt(document.getElementById(`qty-${id}`).value);
-            if (qty > 0) {
-                const product = products.find(p => p.id === id);
-                bucket = [{ ...product, qty }];
-                showOrderForm();
-            }
-        }
+function render() {
+    const grid = document.getElementById('product-grid');
+    grid.innerHTML = '';
+    const items = state.cat === 'All' ? state.products : state.products.filter(p => p.cat === state.cat);
+    items.forEach((p, i) => {
+        grid.innerHTML += `
+            <div class="card">
+                <img src="${p.img}">
+                <h3>${p.name}</h3>
+                <p>₹${p.price} <small>(+₹${p.del} Delivery)</small></p>
+                <button class="btn btn-main" onclick="addToCart(${i})">Add 🛒</button>
+            </div>`;
+    });
+}
 
-        function searchProduct() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const result = document.getElementById('search-result');
-            const found = products.find(p => p.name.toLowerCase() === query && p.listed);
-            if (found) {
-                result.innerHTML = `
-                    <div class="product">
-                        <img src="${found.image}" alt="${found.name}">
-                        <h3>${found.name}</h3>
-                        <p>₹${found.price}</p>
-                        <input type="number" id="search-qty" min="1" value="1">
-                        <button onclick="addToBucket(${found.id})">Add to Bucket</button>
-                        <button onclick="orderNow(${found.id})">Order Now</button>
-                    </div>
-                    <button class="back-btn" onclick="clearSearch()">Back to Home</button>
-                `;
-            } else {
-                result.innerHTML = '<p>This product is not available</p><button class="back-btn" onclick="clearSearch()">Back to Home</button>';
-            }
-            result.classList.remove('hidden');
-            document.getElementById('products-list').classList.add('hidden');
-        }
+function addToCart(i) {
+    state.cart.push(state.products[i]);
+    alert("Bucket mein dala gaya!");
+}
 
-        function clearSearch() {
-            document.getElementById('search-input').value = '';
-            document.getElementById('search-result').classList.add('hidden');
-            document.getElementById('products-list').classList.remove('hidden');
-        }
+async function confirmOrder() {
+    if(!state.user) { alert("Please Login First!"); return show('profile'); }
+    const total = state.cart.reduce((s, i) => s + parseInt(i.price) + parseInt(i.del), 0);
+    const newOrder = {
+        id: Date.now(),
+        userPhone: state.user.phone,
+        userName: state.user.name,
+        total: total,
+        status: 'Pending',
+        items: state.cart.length
+    };
+    state.orders.unshift(newOrder);
+    await fetch(API('orders'), { method: 'POST', body: JSON.stringify(state.orders) });
+    window.open(`https://wa.me/918011924700?text=New Order: ₹${total}`, '_blank');
+    state.cart = [];
+    show('cart');
+}
 
-        function adminLogin() {
-            const pwd = document.getElementById('admin-password').value;
-            if (pwd === 'Bhashkar business') {
-                document.getElementById('admin-panel').classList.remove('hidden');
-                document.querySelector('.admin-form').classList.add('hidden');
-                loadAdminProducts();
-                loadAdminOrders(); // Immediate load
-            } else {
-                alert('Wrong password');
-            }
-        }
+function renderUserOrders() {
+    const list = document.getElementById('my-orders');
+    list.innerHTML = '';
+    if(!state.user) return;
+    state.orders.filter(o => o.userPhone === state.user.phone).forEach((o, i) => {
+        let st = o.status === 'Cancelled' ? 'Cancelled (Not Accepted)' : o.status;
+        list.innerHTML += `<div class="card" style="margin-bottom:10px; text-align:left;">
+            <b>Order #${o.id}</b><br>Amount: ₹${o.total}<br>Status: ${st}
+            ${o.status === 'Pending' ? `<button class="btn btn-outline" style="padding:5px;" onclick="cancelOrder(${o.id})">Cancel</button>` : ''}
+        </div>`;
+    });
+}
 
-        function showAddProductForm() {
-            document.getElementById('add-product-form').classList.remove('hidden');
-        }
+async function cancelOrder(id) {
+    state.orders = state.orders.filter(o => o.id !== id);
+    await fetch(API('orders'), { method: 'POST', body: JSON.stringify(state.orders) });
+    sync();
+}
 
-        function hideAddProductForm() {
-            document.getElementById('add-product-form').classList.add('hidden');
-        }
+// ADMIN PANEL
+function adminLogin() {
+    if(document.getElementById('a-pass').value === "Bhashkar business") {
+        document.getElementById('admin-auth').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+    }
+}
 
-        function addProduct() {
-            const name = document.getElementById('product-name').value;
-            const price = parseInt(document.getElementById('product-price').value);
-            const deliveryCharge = parseInt(document.getElementById('product-delivery').value);
-            const file = document.getElementById('product-image').files[0];
-            if (name && price && deliveryCharge && file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const image = e.target.result;
-                    products.push({ id: products.length + 1, name, price, deliveryCharge, image, listed: true });
-                    saveData(); // Save after adding
-                    loadProducts();
-                    loadAdminProducts();
-                    hideAddProductForm();
-                    alert('Product added successfully!');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                alert('Fill all fields');
-            }
-        }
+async function saveProduct() {
+    const p = {
+        name: document.getElementById('p-name').value,
+        price: document.getElementById('p-price').value,
+        del: document.getElementById('p-del').value,
+        cat: document.getElementById('p-cat').value,
+        img: document.getElementById('p-img').value
+    };
+    state.products.push(p);
+    await fetch(API('inventory'), { method: 'POST', body: JSON.stringify(state.products) });
+    alert("Saved!"); location.reload();
+}
 
-        function loadAdminProducts() {
-            const list = document.getElementById('admin-products');
-            list.innerHTML = '';
-            products.forEach(p => {
-                list.innerHTML += `
-                    <div class="product">
-                        <img src="${p.image}" alt="${p.name}" style="width:50px; height:50px;">
-                        <span>${p.name} - ₹${p.price} (Delivery: ₹${p.deliveryCharge})</span>
-                        <button onclick="toggleList(${p.id})">${p.listed ? 'Unlist' : 'List'}</button>
-                    </div>
-                `;
-            });
-        }
+function renderAdminOrders() {
+    const div = document.getElementById('admin-orders');
+    div.innerHTML = '';
+    state.orders.forEach((o, i) => {
+        div.innerHTML += `<div class="card" style="margin-bottom:10px; text-align:left;">
+            <b>${o.userName} (${o.userPhone})</b><br>Total: ₹${o.total}<br>Status: ${o.status}
+            <button class="btn btn-main" onclick="updateStatus(${i}, 'Delivered')">Delivered</button>
+            <button class="btn btn-outline" onclick="updateStatus(${i}, 'Cancelled')">Cancel</button>
+        </div>`;
+    });
+}
 
-        function toggleList(id) {
-            const product = products.find(p => p.id === id);
-            product.listed = !product.listed;
-            saveData(); // Save after toggle
-            loadProducts();
-            loadAdminProducts();
-        }
+async function updateStatus(i, st) {
+    state.orders[i].status = st;
+    await fetch(API('orders'), { method: 'POST', body: JSON.stringify(state.orders) });
+    sync(); renderAdminOrders();
+}
 
-        function loadAdminOrders() {
-            const list = document.getElementById('admin-orders');
-            list.innerHTML = '';
-            if (orders.length === 0) {
-                list.innerHTML = '<p>No orders yet.</p>';
-            } else {
-                orders.slice().reverse().forEach(o => { // New orders at top
-                    list.innerHTML += `
-                        <div class="order">
-                            <p><strong>Order ID:</strong> ${o.id}</p>
-                            <p><strong>Name:</strong> ${o.name}</p>
-                            <p><strong>Phone:</strong> ${o.phone}</p>
-                            <p><strong>Address:</strong> ${o.address}</p>
-                            <p><strong>Items:</strong> ${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
-                            <p><strong>Total:</strong> ₹${o.total}</p>
-                            <button onclick="cancelOrder(${o.id})">Cancel</button>
-                        </div>
-                    `;
-                });
-            }
-        }
+// AUTH
+function register() {
+    const u = { name: document.getElementById('u-name').value, phone: document.getElementById('u-phone').value };
+    if(!u.name || !u.phone) return alert("Fill all");
+    localStorage.setItem('bsk_user', JSON.stringify(u));
+    location.reload();
+}
+function logout() { localStorage.removeItem('bsk_user'); location.reload(); }
 
-        function showOrderForm() {
-            if (bucket.length > 0) {
-                const total = bucket.reduce((sum, item) => sum + (item.price * item.qty), 0) + bucket[0].deliveryCharge;
-                document.getElementById('order-summary').innerHTML = `<p>Total: ₹${total} (including delivery)</p>`;
-                showPage('order-form');
-            } else {
-                alert('Bucket is empty');
-            }
-        }
+function show(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if(id === 'cart') renderUserOrders();
+}
+function filterCat(c, el) {
+    state.cat = c;
+    document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('cat-active'));
+    el.classList.add('cat-active');
+    render();
+}
+function search() {
+    const q = document.getElementById('search-in').value.toLowerCase();
+    const res = state.products.filter(p => p.name.toLowerCase().includes(q));
+    const grid = document.getElementById('product-grid');
+    grid.innerHTML = '';
+    res.forEach(p => grid.innerHTML += `<div class="card"><img src="${p.img}"><h3>${p.name}</h3><p>₹${p.price}</p></div>`);
+}
+function toggleAdminView(v) {
+    document.getElementById('admin-add').style.display = v==='add'?'block':'none';
+    document.getElementById('admin-orders').style.display = v==='orders'?'block':'none';
+    if(v==='orders') renderAdminOrders();
+}
 
-        function placeOrder() {
-            const name = document.getElementById('order-name').value;
-            const phone = document.getElementById('order-phone').value;
-            const address = document.getElementById('order-address').value;
-            if (name && phone.length === 10 && /^\d+$/.test(phone) && address && bucket.length > 0) {
-                const total = bucket.reduce((sum, item) => sum + (item.price * item.qty), 0) + bucket[0].deliveryCharge;
-                const order = { id: orders.length + 1, name, phone, address, items: [...bucket], total };
-                orders.push(order);
-                saveData(); // Save after placing order
-                bucket = [];
-                alert('Order placed');
-                showPage('home-page');
-            } else {
-                alert('Fill all details correctly');
-            }
-        }
-
-        function cancelOrder(id) {
-            orders = orders.filter(o => o.id !== id);
-            saveData(); // Save after cancel
-            loadAdminOrders();
-            loadMyOrders();
-        }
-
-        function loadBucket() {
-            const list = document.getElementById('bucket-items');
-            list.innerHTML = '';
-            bucket.forEach(item => {
-                list.innerHTML += `<div class="bucket-item"><span>${item.name} x${item.qty} - ₹${item.price * item.qty}</span></div>`;
-            });
-        }
-
-        function loadMyOrders() {
-            const list = document.getElementById('my-orders-list');
-            list.innerHTML = '';
-            orders.filter(o => o.phone === userPhone).forEach(o => {
-                list.innerHTML += `
-                    <div class="order">
-                        <p>Items: ${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
-                        <p>Total: ₹${o.total}</p>
-                        <button onclick="cancelOrder(${o.id})">Cancel</button>
-                    </div>
-                `;
-            });
-        }
-    </script>
+init();
+</script>
 </body>
 </html>

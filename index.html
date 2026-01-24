@@ -12,20 +12,23 @@
         .page { display: none; padding: 10px; animation: fadeIn 0.3s; }
         .active-page { display: block !important; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .card { background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
+        .card { background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; margin-bottom: 15px; }
         .product-img { width: 100%; height: 140px; object-fit: contain; background: white; border-bottom: 1px solid #f0f0f0; }
-        .product-info { padding: 8px; text-align: center; flex-grow: 1; }
-        .p-name { font-size: 13px; font-weight: bold; color: #333; margin: 4px 0; height: 32px; overflow: hidden; }
-        .p-price { color: #B12704; font-size: 16px; font-weight: bold; margin: 0; }
-        .p-delivery { color: #565959; font-size: 10px; margin-bottom: 6px; }
-        .btn-buy { background: #fb641b; color: white; border: none; padding: 10px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .btn-cart { background: #ff9f00; color: white; border: none; padding: 10px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 4px; font-size: 12px; }
-        .search-container { display: flex; margin-bottom: 15px; }
-        .search-container input { border-radius: 4px 0 0 4px; border: 1px solid #ccc; padding: 10px; flex: 1; outline: none; }
-        .btn-search { background: var(--amazon-orange); border: none; padding: 10px 15px; border-radius: 0 4px 4px 0; cursor: pointer; font-weight: bold; }
+        .product-info { padding: 8px; text-align: center; }
+        .p-name { font-size: 13px; font-weight: bold; height: 32px; overflow: hidden; margin: 4px 0; }
+        .p-price { color: #B12704; font-size: 16px; font-weight: bold; }
+        .btn-buy { background: #fb641b; color: white; border: none; padding: 10px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 1000; }
         .nav-item { border: none; background: none; font-size: 11px; font-weight: bold; color: var(--amazon-blue); cursor: pointer; }
         input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        
+        .about-box { padding: 20px; text-align: center; background: #fff; border-radius: 10px; margin-bottom: 15px; border: 2px solid var(--amazon-orange); }
+        .order-card { background: #fff; border-left: 5px solid #ff9900; padding: 12px; margin-bottom: 10px; font-size: 13px; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; margin-top: 5px; }
+        .status-pending { background: #fff3e0; color: #ef6c00; }
+        .status-delivered { background: #e8f5e9; color: #2e7d32; }
+        
+        .btn-admin-action { padding: 5px 8px; font-size: 11px; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; font-weight: bold; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -34,73 +37,90 @@
 <header><h2>Bsk home need's</h2></header>
 
 <div id="shop-page" class="page active-page">
-    <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search product name...">
-        <button class="btn-search" onclick="filter()">Search</button>
-    </div>
     <div id="product-grid" class="grid">Loading Products...</div>
 </div>
 
 <div id="cart-page" class="page">
-    <h3 style="text-align:center;">🛒 Shopping Cart</h3>
-    <div id="cart-list" class="card" style="padding:10px; text-align:center;">Empty</div>
-    <div id="cart-summary" style="margin: 15px 0; font-weight: bold; font-size: 18px; text-align: center; color: #B12704;">Total: ₹0</div>
-    <div class="card" style="padding:15px;">
-        <input type="text" id="cust-name" placeholder="Customer Name">
-        <input type="number" id="cust-phone" placeholder="Customer Phone Number">
-        <textarea id="cust-addr" placeholder="Full Address with PIN Code"></textarea>
-        <button class="btn-buy" onclick="placeBulkOrder()">📦 Confirm on WhatsApp</button>
+    <h3 style="text-align:center;">🛒 Checkout</h3>
+    <div id="cart-list" class="card" style="padding:10px; text-align:center;">Cart Empty</div>
+    <div id="cart-summary" style="text-align:center; font-weight:bold; margin:10px; font-size: 18px; color:#B12704;">Total: ₹0</div>
+    
+    <div id="order-form" class="card" style="padding:15px; display: none;">
+        <input type="text" id="cust-name" placeholder="Full Name">
+        <input type="number" id="cust-phone" placeholder="Phone Number">
+        <textarea id="cust-addr" placeholder="Delivery Address"></textarea>
+        <button class="btn-buy" onclick="placeOrderDB()">✅ Place Order</button>
+    </div>
+    
+    <div id="login-msg" class="card" style="padding:20px; text-align:center;">
+        <p style="color:red; font-weight:bold;">ऑर्डर करने के लिए पहले लॉगिन करें!</p>
+        <button class="btn-buy" style="background:var(--amazon-blue);" onclick="show('contact-page')">Login Page</button>
     </div>
 </div>
 
 <div id="contact-page" class="page">
-    <div class="card" style="text-align: center; padding:20px;">
-        <h2>Bsk home need's</h2>
-        <p>Email: <b>bskhomeneeds@gmail.com</b></p>
-        <button onclick="adminAuth()" class="btn-buy" style="background: var(--amazon-blue); margin-top: 20px;">Admin Login</button>
+    <div class="about-box">
+        <h3>About Us</h3>
+        <p>Email: bskhomeneeds@gmail.com</p>
     </div>
+
+    <div id="auth-section" class="card" style="padding:15px;">
+        <h4 style="text-align:center;">Customer Login</h4>
+        <input type="email" id="user-email" placeholder="Gmail ID">
+        <button class="btn-buy" onclick="login()">Login</button>
+    </div>
+
+    <div id="user-section" style="display:none;">
+        <div class="card" style="text-align:center; padding:15px;">
+            <p>Welcome: <b id="display-user-email"></b></p>
+            <button class="btn-buy" style="background:#666; padding:5px 15px;" onclick="logout()">Logout</button>
+        </div>
+        
+        <h3>📦 My Orders</h3>
+        <div id="my-orders-list" style="padding-bottom: 20px;">Loading your orders...</div>
+    </div>
+
+    <button onclick="adminAuth()" style="background:var(--amazon-blue); color:white; border:none; padding:12px; border-radius:4px; width:100%; font-weight:bold; margin-top:20px;">Admin Control Panel</button>
 </div>
 
 <div id="admin-dashboard" class="page">
     <div class="card" style="padding:10px;">
         <button class="btn-buy" onclick="show('admin-add')">➕ Add Product</button>
-        <button onclick="repairDB()" style="background:red; color:white; border:none; padding:10px; margin-top:10px; border-radius:5px; width:100%;">🛠 Fix Database</button>
     </div>
-    <div id="admin-product-list" style="margin-top:10px;"></div>
+    <h3>📦 Manage Orders (Admin)</h3>
+    <div id="admin-orders-list" style="max-height: 500px; overflow-y: auto; background:#ddd; padding:10px; border-radius:8px;"></div>
+    <h3>🛍 Inventory</h3>
+    <div id="admin-product-list" class="card" style="padding:10px;"></div>
 </div>
 
 <div id="admin-add" class="page">
     <div class="card" style="padding:15px;">
-        <h3>Product Details</h3>
-        <input type="text" id="p-name" placeholder="Name">
+        <input type="text" id="p-name" placeholder="Product Name">
         <input type="number" id="p-price" placeholder="Price">
-        <input type="number" id="p-del" placeholder="Delivery Charge">
         <input type="text" id="p-img" placeholder="Image URL">
         <button class="btn-buy" onclick="saveProduct()">Save Product</button>
-        <button onclick="show('admin-dashboard')" style="width:100%; background:none; border:none; margin-top:10px;">Cancel</button>
+        <button onclick="show('admin-dashboard')" style="width:100%; border:none; background:none; margin-top:10px;">Cancel</button>
     </div>
 </div>
 
 <nav class="bottom-nav">
     <button class="nav-item" onclick="show('shop-page')">🏠<br>Home</button>
     <button class="nav-item" onclick="show('cart-page')">🛒<br>Cart</button>
-    <button class="nav-item" onclick="show('contact-page')">👤<br>Admin</button>
+    <button class="nav-item" onclick="show('contact-page')">👤<br>Profile</button>
 </nav>
 
 <script>
     const SB_URL = "https://lfxorgprrgpkkiqdjqdb.supabase.co";
     const SB_KEY = "sb_publishable_yyyMF6aEwhtYh4RHUFrIgA_OEU64IIX";
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
-    
-    // YAHAN APKA NUMBER HAI - BILKUL OPEN
-    const MY_WA = "918001192470"; 
 
-    let items = [], cart = [];
+    let items = [], cart = [], user = localStorage.getItem('u_email');
 
     async function start() {
         const { data } = await _supabase.from('inventory').select('*');
         items = data || [];
         render(items);
+        updateUserUI();
     }
 
     function render(list) {
@@ -110,65 +130,109 @@
                 <div class="product-info">
                     <div class="p-name">${p.Name}</div>
                     <div class="p-price">₹${p.price}</div>
-                    <div class="p-delivery">Delivery: ₹${p.delivery_charge || 0}</div>
-                    <button class="btn-cart" onclick="addCart('${p.Name}', ${p.price}, ${p.delivery_charge || 0})">Add</button>
-                    <button class="btn-buy" style="margin-top:4px;" onclick="buyNow('${p.Name}', ${p.price}, ${p.delivery_charge || 0})">Buy Now</button>
+                    <button class="btn-buy" style="background:var(--amazon-orange);" onclick="addCart('${p.Name}', ${p.price})">Add to Cart</button>
                 </div>
             </div>
-        `).join('') || "<p style='width:100%; text-align:center;'>No products found.</p>";
+        `).join('');
     }
 
-    function filter() {
-        const q = document.getElementById('search-input').value.toLowerCase().trim();
-        render(items.filter(x => x.Name.toLowerCase().includes(q)));
-    }
-
-    function addCart(n, p, d) { cart.push({n, p, d}); updateCart(); alert(n + " added to cart!"); }
-    function buyNow(n, p, d) { cart = [{n, p, d}]; updateCart(); show('cart-page'); }
-    
+    function addCart(n, p) { cart.push({n, p}); updateCart(); alert(n + " added!"); }
     function updateCart() {
-        let t = cart.reduce((s, i) => s + i.p + i.d, 0);
-        document.getElementById('cart-list').innerHTML = cart.map(i => `<div style="padding:5px; border-bottom:1px solid #eee; text-align:left;">${i.n} - ₹${i.p}</div>`).join('') || "Cart is empty";
+        let t = cart.reduce((s, i) => s + i.p, 0);
+        document.getElementById('cart-list').innerHTML = cart.map(i => `<div>${i.n} - ₹${i.p}</div>`).join('') || "Cart Empty";
         document.getElementById('cart-summary').innerText = "Total: ₹" + t;
+        document.getElementById('order-form').style.display = user ? 'block' : 'none';
+        document.getElementById('login-msg').style.display = user ? 'none' : 'block';
     }
 
-    async function placeBulkOrder() {
-        const n = document.getElementById('cust-name').value;
-        const ph = document.getElementById('cust-phone').value;
-        const a = document.getElementById('cust-addr').value;
-        
-        if(cart.length === 0 || !n || !ph || !a) return alert("Please fill all details!");
+    async function placeOrderDB() {
+        const n = document.getElementById('cust-name').value, ph = document.getElementById('cust-phone').value, a = document.getElementById('cust-addr').value;
+        if(!n || !ph || !a) return alert("Fill details!");
         
         const details = cart.map(i => i.n).join(', ');
-        const total = cart.reduce((s, i) => s + i.p + i.d, 0);
-        
-        // DIRECT WHATSAPP LINK
-        const waMsg = `*New Order*%0A------------------%0AItems: ${details}%0ATotal Amount: ₹${total}%0A%0A*Customer Details*%0AName: ${n}%0APhone: ${ph}%0AAddress: ${a}`;
-        
-        window.open(`https://wa.me/${MY_WA}?text=${waMsg}`);
+        // Status 'Pending' से शुरू होगा
+        await _supabase.from('orders').insert([{ 
+            customer_name: n, 
+            customer_email: user, // यहाँ कस्टमर की लॉगिन ईमेल जाएगी ताकि 'My Orders' में दिखे
+            order_details: `Items: ${details} | Phone: ${ph} | Addr: ${a}`, 
+            total_price: cart.reduce((s, i) => s + i.p, 0),
+            status: 'Pending' 
+        }]);
+
+        alert("Order Placed!"); cart = []; updateCart(); show('shop-page');
     }
 
-    function adminAuth() { if(prompt("Pass:") === "Bhashkar jyoti Roy") { show('admin-dashboard'); loadAdminData(); } }
+    function login() { 
+        let mail = document.getElementById('user-email').value; 
+        if(mail.includes("@")) { user = mail; localStorage.setItem('u_email', user); updateUserUI(); }
+    }
+    function logout() { localStorage.removeItem('u_email'); user = null; updateUserUI(); }
+
+    function updateUserUI() {
+        if(user) { 
+            document.getElementById('auth-section').style.display='none'; 
+            document.getElementById('user-section').style.display='block'; 
+            document.getElementById('display-user-email').innerText=user; 
+            loadMyOrders();
+        } else { 
+            document.getElementById('auth-section').style.display='block'; 
+            document.getElementById('user-section').style.display='none'; 
+        }
+        updateCart();
+    }
+
+    // कस्टमर के लिए ऑर्डर्स देखना
+    async function loadMyOrders() {
+        const { data } = await _supabase.from('orders').select('*').eq('customer_email', user).order('created_at', { ascending: false });
+        document.getElementById('my-orders-list').innerHTML = data?.map(o => `
+            <div class="order-card" style="border-left-color: ${o.status==='Delivered'?'#2e7d32':'#ff9900'}">
+                <b>${o.order_details.split('|')[0]}</b><br>
+                Total: ₹${o.total_price}<br>
+                Status: <span class="status-badge ${o.status==='Delivered'?'status-delivered':'status-pending'}">${o.status || 'Pending'}</span>
+            </div>
+        `).join('') || "No orders yet.";
+    }
+
+    // एडमिन कंट्रोल
+    function adminAuth() { if(prompt("Pass:") === "Bhashkar jyoti Roy") { show('admin-dashboard'); loadAdminData(); loadOrders(); } }
+
+    async function loadOrders() {
+        const { data } = await _supabase.from('orders').select('*').order('created_at', { ascending: false });
+        document.getElementById('admin-orders-list').innerHTML = data?.map(o => `
+            <div class="order-card">
+                <b>Customer:</b> ${o.customer_name}<br><b>Email:</b> ${o.customer_email}<br><b>Info:</b> ${o.order_details}<br>
+                <b>Status:</b> ${o.status || 'Pending'}<br>
+                <div style="margin-top:10px;">
+                    <button class="btn-admin-action" style="background:#2e7d32; color:white;" onclick="updateStatus('${o.id}', 'Delivered')">Mark Delivered</button>
+                    <button class="btn-admin-action" style="background:#d32f2f; color:white;" onclick="deleteOrder('${o.id}')">Delete Order</button>
+                </div>
+            </div>
+        `).join('') || "No Orders.";
+    }
+
+    async function updateStatus(id, stat) {
+        await _supabase.from('orders').update({ status: stat }).eq('id', id);
+        alert("Status Updated!"); loadOrders();
+    }
+
+    async function deleteOrder(id) { if(confirm("Delete Order?")) { await _supabase.from('orders').delete().eq('id', id); loadOrders(); } }
+
     async function loadAdminData() {
         const { data } = await _supabase.from('inventory').select('*');
-        document.getElementById('admin-product-list').innerHTML = data?.map(p => `<div style="display:flex; justify-content:space-between; padding:10px; background:white; margin-bottom:5px; border-radius:5px;"><span>${p.Name}</span> <button onclick="unlist('${p.id}')" style="color:red; border:none; background:none;">Delete</button></div>`).join('');
+        document.getElementById('admin-product-list').innerHTML = data?.map(p => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${p.Name}</span> <button onclick="deleteProd('${p.id}')" style="color:red; border:none; background:none;">Delete</button></div>`).join('');
     }
 
     async function saveProduct() {
-        const n = document.getElementById('p-name').value, p = document.getElementById('p-price').value, d = document.getElementById('p-del').value, i = document.getElementById('p-img').value;
-        if(!n || !p || !i) return alert("Fill Name, Price & Image URL!");
-        await _supabase.from('inventory').insert([{ Name: n, price: parseInt(p), delivery_charge: parseInt(d || 0), img: i }]);
-        alert("Product Added!"); show('admin-dashboard'); start();
+        const n = document.getElementById('p-name').value, p = document.getElementById('p-price').value, i = document.getElementById('p-img').value;
+        await _supabase.from('inventory').insert([{ Name: n, price: parseInt(p), img: i }]);
+        alert("Added!"); show('admin-dashboard'); start();
     }
 
-    async function unlist(id) { if(confirm("Delete this product?")) { await _supabase.from('inventory').delete().eq('id', id); loadAdminData(); start(); } }
-    async function repairDB() {
-        await _supabase.rpc('exec_sql', { sql_query: `ALTER TABLE inventory ADD COLUMN IF NOT EXISTS delivery_charge int DEFAULT 0;` });
-        alert("Database Fixed!");
-    }
+    async function deleteProd(id) { if(confirm("Delete Product?")) { await _supabase.from('inventory').delete().eq('id', id); loadAdminData(); start(); } }
 
     function show(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); document.getElementById(id).classList.add('active-page'); window.scrollTo(0,0); }
     start();
 </script>
 </body>
 </html>
+

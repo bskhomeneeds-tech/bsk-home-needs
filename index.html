@@ -6,81 +6,79 @@
     <title>Bsk Home Needs</title>
     <style>
         :root { --primary:#28a745; --light:#f4f7f6; }
-        body{margin:0;font-family:Segoe UI,Arial;background:var(--light);padding-bottom:75px}
-        header{background:var(--primary);color:#fff;padding:15px;text-align:center;position:sticky;top:0;z-index:1000}
-        .page{display:none;padding:15px}
+        body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--light);padding-bottom:80px;}
+        header{background:var(--primary);color:#fff;padding:15px;text-align:center;position:sticky;top:0;z-index:1000;}
+        .page{display:none;padding:15px;animation:fadeIn 0.3s;}
         .active{display:block}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
         .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        .card{background:#fff;padding:10px;border-radius:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06); margin-bottom: 10px;}
-        .card img{width:100%;height:110px;object-fit:cover;border-radius:8px; background: #eee;}
-        .btn{padding:12px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;width:100%;margin-top:6px}
+        .card{background:#fff;padding:12px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);text-align:center;position:relative}
+        .card img{width:100%;height:110px;object-fit:cover;border-radius:8px;}
+        .badge{position:absolute;top:5px;right:5px;background:orange;color:#fff;font-size:10px;padding:2px 6px;border-radius:5px;}
+        .btn{padding:12px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;width:100%;margin-top:8px;}
         .btn-main{background:var(--primary);color:#fff}
-        .btn-outline{border:1px solid var(--primary);background:none;color:var(--primary)}
-        .input-f{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px; box-sizing: border-box;}
-        .nav{position:fixed;bottom:0;width:100%;background:#fff;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #ddd}
-        .nav-btn{background:none;border:none;font-size:11px;cursor:pointer}
-        .search-box { display: flex; gap: 5px; margin-bottom: 15px; }
-        .search-box input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+        .input-f{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;}
+        .nav{position:fixed;bottom:0;width:100%;background:#fff;display:flex;justify-content:space-around;padding:12px 0;border-top:1px solid #eee;z-index:1000}
+        .nav-btn{background:none;border:none;font-size:12px;color:#666;cursor:pointer}
+        .price-tag{color:var(--primary); font-weight:bold; font-size:18px}
+        .del-tag{font-size:11px; color:#777}
     </style>
 </head>
 <body>
 
-<header>
-    <h3 style="margin:0">Bsk Home Needs</h3>
-</header>
+<header><h3 style="margin:0">Bsk Home Needs</h3></header>
 
 <div id="home" class="page active">
-    <div class="search-box">
-        <input type="text" id="search-input" placeholder="Search products..." onkeyup="doSearch()">
-        <button class="btn-main" style="width:auto; padding:0 15px;">🔍</button>
-    </div>
-    <div id="product-grid" class="grid">Loading Products...</div>
+    <input type="text" id="search-q" class="input-f" placeholder="🔍 Search products..." onkeyup="doSearch()">
+    <div id="product-grid" class="grid">☁️ Loading products from cloud...</div>
 </div>
 
 <div id="cart" class="page">
     <h3>🛒 My Bucket</h3>
-    <div id="bucket-items"></div>
-    <div id="checkout" style="display:none; background:white; padding:15px; border-radius:10px; margin-top:10px;">
-        <h4 id="total-price" style="margin:0 0 10px 0;">Total: ₹0</h4>
-        <button class="btn btn-main" onclick="confirmOrder()">Confirm Order (WhatsApp)</button>
+    <div id="bucket-list"></div>
+    <div id="checkout-box" style="display:none; background:#fff; padding:15px; border-radius:12px; margin-top:15px;">
+        <h4>Checkout Details</h4>
+        <input id="ord-name" class="input-f" placeholder="Recipient Name">
+        <input id="ord-addr" class="input-f" placeholder="Full Delivery Address">
+        <div id="bill-details" style="border-top:1px dashed #ccc; padding-top:10px; margin-top:10px;"></div>
+        <button class="btn btn-main" onclick="confirmOrder()">Send WhatsApp Order 🚀</button>
     </div>
 </div>
 
 <div id="admin" class="page">
-    <div id="admin-login-area">
-        <input id="a-pass" class="input-f" type="password" placeholder="Admin Password">
-        <button class="btn btn-main" onclick="adminLogin()">Login Admin</button>
+    <div id="admin-login">
+        <h3>Admin Panel</h3>
+        <input id="pass-in" class="input-f" type="password" placeholder="Password">
+        <button class="btn btn-main" onclick="adminLogin()">Login</button>
     </div>
     <div id="admin-panel" style="display:none">
-        <div style="display:flex; gap:5px; margin-bottom:15px;">
-            <button class="btn btn-main" onclick="toggleAdminView('add')">Add Product</button>
-            <button class="btn btn-outline" onclick="toggleAdminView('list')">Unlist Items</button>
-        </div>
-        <div id="admin-add" style="display:none">
-            <input id="p-name" class="input-f" placeholder="Product Name">
-            <input id="p-price" class="input-f" type="number" placeholder="Price">
-            <input id="p-del" class="input-f" type="number" placeholder="Delivery Charge">
-            <input id="p-img" class="input-f" placeholder="Image URL">
-            <button class="btn btn-main" id="save-btn" onclick="saveProduct()">PUBLISH LIVE</button>
-        </div>
-        <div id="admin-list" style="display:none"></div>
+        <h4>Add Product to Cloud</h4>
+        <input id="p-name" class="input-f" placeholder="Product Name">
+        <input id="p-price" class="input-f" type="number" placeholder="Price">
+        <input id="p-del" class="input-f" type="number" placeholder="Delivery Fee">
+        <input id="p-img" class="input-f" placeholder="Image URL">
+        <button class="btn btn-main" id="pub-btn" onclick="saveToCloud()">Publish Live 🚀</button>
+        <hr>
+        <h4>Live Inventory</h4>
+        <div id="admin-list"></div>
     </div>
 </div>
 
-<div id="profile" class="page">
-    <div style="background:white; padding:20px; border-radius:10px; text-align:center;">
-        <h3>Contact Us</h3>
-        <p>📧 Email: <b>bskhomeneeds@gmail.com</b></p>
-    </div>
-    <hr>
-    <div id="login-section">
-        <h3>Customer Login</h3>
-        <input id="u-name" class="input-f" placeholder="Full Name">
-        <input id="u-phone" class="input-f" placeholder="Phone Number">
-        <button class="btn btn-main" onclick="register()">Save Details</button>
-    </div>
-    <div id="logout-section" style="display:none">
-        <button class="btn btn-outline" onclick="logout()">Logout Account</button>
+<div id="about" class="page">
+    <div style="background:#fff; padding:20px; border-radius:12px; text-align:center">
+        <h3>Contact Support</h3>
+        <p>📧 <b>bskhomeneeds@gmail.com</b></p>
+        <hr>
+        <div id="user-info">
+            <h4>👤 Create ID</h4>
+            <input id="u-name" class="input-f" placeholder="Your Name">
+            <input id="u-phone" class="input-f" placeholder="WhatsApp Number">
+            <button class="btn btn-main" onclick="saveProfile()">Save ID</button>
+        </div>
+        <div id="profile-active" style="display:none">
+            <p id="p-welcome" style="color:green; font-weight:bold"></p>
+            <button class="btn" style="border:1px solid #ddd" onclick="logout()">Logout</button>
+        </div>
     </div>
 </div>
 
@@ -88,148 +86,159 @@
     <button class="nav-btn" onclick="show('home')">🏠<br>Home</button>
     <button class="nav-btn" onclick="show('cart')">🛒<br>Bucket</button>
     <button class="nav-btn" onclick="show('admin')">👤<br>Admin</button>
-    <button class="nav-btn" onclick="show('profile')">📞<br>Contact</button>
+    <button class="nav-btn" onclick="show('about')">ℹ️<br>Account</button>
 </div>
 
 <script>
-const DB_ID = "bsk_final_2026_live"; 
-const API = k => `https://kvdb.io/${DB_ID}/${k}`;
+// Cloud Database Configuration
+const DB_NAME = "bsk_official_store_v2";
+const API = `https://kvdb.io/${DB_NAME}/inventory`;
 
-let state = { products: [], cart: [], user: null };
+let state = { products: [], cart: [] };
 
 async function init() {
-    const u = localStorage.getItem("bsk_user");
-    if(u) {
-        state.user = JSON.parse(u);
-        document.getElementById("login-section").style.display = "none";
-        document.getElementById("logout-section").style.display = "block";
+    // Load User Profile
+    const saved = localStorage.getItem("bsk_user");
+    if(saved) {
+        const user = JSON.parse(saved);
+        document.getElementById("user-info").style.display = "none";
+        document.getElementById("profile-active").style.display = "block";
+        document.getElementById("p-welcome").innerText = "Logged in as: " + user.name;
     }
-    await sync();
+    await syncCloud();
 }
 
-async function sync() {
+async function syncCloud() {
     try {
-        const p = await fetch(API("inventory"));
-        state.products = p.ok ? await p.json() : [];
-        renderHome();
-    } catch(e) { document.getElementById("product-grid").innerHTML = "Connection Error."; }
+        const res = await fetch(API + "?v=" + Date.now());
+        if(res.ok) {
+            state.products = await res.json();
+            // Seed defaults if empty
+            if(state.products.length === 0) {
+                const seed = [
+                    {name:"American Onion Style", price:5, del:2, img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_p6v9_Yw9vD4_jB9G_X-W8-eR_S0X_X_X_A&s"},
+                    {name:"Lays Magic Masala", price:5, del:2, img:"https://m.media-amazon.com/images/I/718nSAtu6SL._SL1500_.jpg"}
+                ];
+                await fetch(API, {method:"POST", body:JSON.stringify(seed)});
+                state.products = seed;
+            }
+        }
+    } catch(e) { console.error("Sync Error"); }
+    renderHome();
 }
 
 function renderHome(data = state.products) {
-    const g = document.getElementById("product-grid");
-    g.innerHTML = data.length ? "" : "No products available.";
+    const grid = document.getElementById("product-grid");
+    grid.innerHTML = "";
     data.forEach((p, i) => {
-        g.innerHTML += `
+        grid.innerHTML += `
         <div class="card">
+            <span class="badge">Live</span>
             <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150'">
-            <b>${p.name}</b><br>
-            ₹${p.price} <small>(Del: ₹${p.del})</small>
-            <button class="btn btn-main" onclick="addToCart(${i})">Add 🛒</button>
+            <div style="margin:5px 0"><b>${p.name}</b></div>
+            <div class="price-tag">₹${p.price}</div>
+            <div class="del-tag">+ ₹${p.del} Delivery</div>
+            <button class="btn btn-main" onclick="addToBucket(${i})">Add to Bucket</button>
         </div>`;
     });
 }
 
-function doSearch() {
-    const q = document.getElementById("search-input").value.toLowerCase();
-    const filtered = state.products.filter(p => p.name.toLowerCase().includes(q));
-    renderHome(filtered);
-}
-
-function addToCart(i) {
+function addToBucket(i) {
     state.cart.push(state.products[i]);
-    alert("Added to Bucket!");
-    renderCart();
+    alert("Item added to bucket!");
+    updateBucketUI();
 }
 
-function renderCart() {
-    const d = document.getElementById("bucket-items");
-    d.innerHTML = state.cart.length ? "" : "Your bucket is empty.";
-    let total = 0;
+function updateBucketUI() {
+    const list = document.getElementById("bucket-list");
+    const box = document.getElementById("checkout-box");
+    const bill = document.getElementById("bill-details");
+    list.innerHTML = "";
+    
+    let subtotal = 0, delivery = 0;
+    
     state.cart.forEach((p, i) => {
-        total += Number(p.price) + Number(p.del);
-        d.innerHTML += `<div class="card" style="text-align:left; display:flex; justify-content:space-between; align-items:center;">
-            <span>${p.name} (₹${p.price})</span>
-            <button onclick="removeFromCart(${i})" style="color:red; background:none; border:none;">❌</button>
-        </div>`;
+        subtotal += Number(p.price);
+        delivery += Number(p.del);
+        list.innerHTML += `<div class="card" style="display:flex;justify-content:space-between;margin-bottom:5px"><span>${p.name} (₹${p.price})</span><button onclick="state.cart.splice(${i},1);updateBucketUI()" style="color:red;border:none;background:none">X</button></div>`;
     });
-    document.getElementById("total-price").innerText = "Total: ₹" + total;
-    document.getElementById("checkout").style.display = state.cart.length ? "block" : "none";
-}
 
-function removeFromCart(i) {
-    state.cart.splice(i, 1);
-    renderCart();
+    bill.innerHTML = `<p>Items Total: ₹${subtotal}</p><p>Delivery Fee: ₹${delivery}</p><h3 style="color:var(--primary)">Grand Total: ₹${subtotal + delivery}</h3>`;
+    box.style.display = state.cart.length ? "block" : "none";
 }
 
 function confirmOrder() {
-    if(!state.user) { alert("Please login in Contact section first!"); return show('profile'); }
-    let msg = `New Order from ${state.user.name} (${state.user.phone}):\n`;
-    state.cart.forEach(p => msg += `- ${p.name} (₹${p.price})\n`);
-    msg += `Total Payable: ${document.getElementById("total-price").innerText}`;
-    window.open(`https://wa.me/918011924700?text=${encodeURIComponent(msg)}`, '_blank');
+    const name = document.getElementById("ord-name").value;
+    const addr = document.getElementById("ord-addr").value;
+    if(!name || !addr) return alert("Fill delivery info!");
+
+    let msg = `*New Order - Bsk Home Needs*\n\n*Customer:* ${name}\n*Address:* ${addr}\n\n*Items:*\n`;
+    let total = 0;
+    state.cart.forEach(p => {
+        msg += `- ${p.name} (₹${p.price})\n`;
+        total += (Number(p.price) + Number(p.del));
+    });
+    msg += `\n*Final Total:* ₹${total}`;
+    
+    window.open(`https://wa.me/918011924700?text=${encodeURIComponent(msg)}`);
+    state.cart = []; // Auto clear
+    updateBucketUI();
 }
 
-async function saveProduct() {
-    const name = document.getElementById("p-name").value;
-    const price = document.getElementById("p-price").value;
-    const del = document.getElementById("p-del").value || 0;
-    const img = document.getElementById("p-img").value;
-    if(!name || !price || !img) return alert("Fill Name, Price and Image URL!");
-
-    document.getElementById("save-btn").innerText = "Publishing...";
-    state.products.push({ name, price, del, img });
-    await fetch(API("inventory"), { method: "POST", body: JSON.stringify(state.products) });
-    alert("Product added successfully!");
+async function saveToCloud() {
+    const n = document.getElementById("p-name").value;
+    const p = document.getElementById("p-price").value;
+    const d = document.getElementById("p-del").value || 0;
+    const i = document.getElementById("p-img").value;
+    
+    if(!n || !p || !i) return alert("Fill all details!");
+    
+    state.products.push({name:n, price:p, del:d, img:i});
+    await fetch(API, {method:"POST", body:JSON.stringify(state.products)});
+    alert("Cloud Updated! Product is now LIVE.");
     location.reload();
 }
 
 function adminLogin() {
-    if(document.getElementById("a-pass").value === "Bhashkar business") {
-        document.getElementById("admin-login-area").style.display = "none";
+    if(document.getElementById("pass-in").value === "Bhashkar business") {
+        document.getElementById("admin-login").style.display = "none";
         document.getElementById("admin-panel").style.display = "block";
-    } else alert("Wrong password");
-}
-
-function toggleAdminView(v) {
-    document.getElementById("admin-add").style.display = v === 'add' ? "block" : "none";
-    document.getElementById("admin-list").style.display = v === 'list' ? "block" : "none";
-    if(v === 'list') renderAdminList();
+        renderAdminList();
+    }
 }
 
 function renderAdminList() {
-    const d = document.getElementById("admin-list");
-    d.innerHTML = "<h3>Inventory List</h3>";
+    const list = document.getElementById("admin-list");
+    list.innerHTML = "";
     state.products.forEach((p, i) => {
-        d.innerHTML += `<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-            <span>${p.name}</span>
-            <button onclick="deleteProduct(${i})" style="color:red; background:none; border:none; cursor:pointer;">Delete ❌</button>
-        </div>`;
+        list.innerHTML += `<div style="display:flex;justify-content:space-between;padding:10px;background:#fff;margin-bottom:5px;border-radius:8px"><span>${p.name}</span><button onclick="delItem(${i})" style="color:red">Delete</button></div>`;
     });
 }
 
-async function deleteProduct(i) {
-    if(!confirm("Delete this product?")) return;
+async function delItem(i) {
+    if(!confirm("Remove from cloud?")) return;
     state.products.splice(i, 1);
-    await fetch(API("inventory"), { method: "POST", body: JSON.stringify(state.products) });
-    renderAdminList();
-    renderHome();
+    await fetch(API, {method:"POST", body:JSON.stringify(state.products)});
+    location.reload();
 }
 
-function show(id) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById(id).classList.add('active');
-    if(id === 'cart') renderCart();
-}
-
-function register() {
-    const name = document.getElementById("u-name").value;
-    const phone = document.getElementById("u-phone").value;
-    if(!name || !phone) return alert("Fill all details");
-    localStorage.setItem("bsk_user", JSON.stringify({name, phone}));
+function saveProfile() {
+    const n = document.getElementById("u-name").value;
+    const ph = document.getElementById("u-phone").value;
+    if(!n || !ph) return;
+    localStorage.setItem("bsk_user", JSON.stringify({name:n, phone:ph}));
     location.reload();
 }
 
 function logout() { localStorage.removeItem("bsk_user"); location.reload(); }
+function show(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+function doSearch() {
+    const q = document.getElementById("search-q").value.toLowerCase();
+    renderHome(state.products.filter(p => p.name.toLowerCase().includes(q)));
+}
 
 window.onload = init;
 </script>

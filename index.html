@@ -3,261 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bsk Home Needs | Pro Dashboard</title>
+    <title>BSK HOME NEEDS | FINAL ADMIN FIX</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
     <style>
-        :root { 
-            --p: #4f46e5; --s: #f43f5e; --ok: #10b981; --cart-btn: #fbbf24;
-            --glass: rgba(255, 255, 255, 0.95);
-            --grad: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-        }
+        :root { --primary: #6366f1; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --glass: rgba(255, 255, 255, 0.98); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body { 
             font-family: 'Poppins', sans-serif; margin: 0; 
-            background: var(--grad); background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: #1f2937; padding-bottom: 90px; min-height: 100vh;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%; animation: fastBG 15s ease infinite;
+            padding-bottom: 110px; color: #1e293b;
         }
+        @keyframes fastBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
 
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        header { background: rgba(0,0,0,0.95); color: #fff; padding: 10px; text-align: center; position: sticky; top: 0; z-index: 1000; border-bottom: 3px solid var(--primary); height: 50px; display: flex; align-items: center; justify-content: center; }
+        header h2 { margin: 0; font-size: 15px; letter-spacing: 2px; font-weight: 900; }
 
-        header { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); color: white; padding: 20px 15px; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.3); text-align: center; }
-        
-        .page { display: none; padding: 20px; animation: slideUp 0.4s ease; }
-        .active-page { display: block !important; }
+        .container { padding: 10px; max-width: 900px; margin: auto; }
 
-        .box { background: var(--glass); border-radius: 24px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .card { background: white; border-radius: 20px; padding: 12px; text-align: center; }
-        .card img { width: 100%; height: 110px; object-fit: cover; border-radius: 15px; }
-        
-        .btn { border: none; padding: 12px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .btn-cart { background: var(--cart-btn); color: #92400e; margin-bottom: 8px; }
-        .btn-direct { background: var(--p); color: white; }
-        
-        input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-family: inherit; }
+        .cat-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0 20px 0; scrollbar-width: none; }
+        .cat-chip { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; border: 1px solid rgba(255,255,255,0.3); transition: 0.3s; }
+        .cat-chip.active { background: var(--primary); border-color: var(--primary); transform: scale(1.1); }
 
-        .qty-box { display: flex; align-items: center; justify-content: space-around; background: #f3f4f6; border-radius: 10px; padding: 5px; }
-        .qty-btn { background: white; border: 1px solid #ddd; width: 28px; height: 28px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 80px; border-top: 1px solid #eee; z-index: 1001; }
-        .nav-i { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; color: #6b7280; }
-        .active-nav { color: var(--p); font-weight: bold; }
+        .p-card { background: var(--glass); border-radius: 25px; padding: 15px; display: flex; flex-direction: column; height: 450px; justify-content: space-between; box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .p-card:active { transform: scale(0.96); }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .img-box { width: 100%; height: 140px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .img-box img { max-width: 80%; max-height: 80%; object-fit: contain; }
+
+        .btn { border: none; padding: 14px; border-radius: 18px; font-weight: 800; cursor: pointer; font-size: 11px; text-transform: uppercase; width: 100%; transition: 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .btn-cart { background: var(--warning); color: #fff; margin-bottom: 6px; }
+        .btn-buy { background: var(--primary); color: #fff; }
+        .btn:active { transform: scale(0.85) translateY(4px); }
+
+        nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; background: rgba(0,0,0,0.95); height: 75px; border-radius: 35px; display: flex; justify-content: space-around; align-items: center; z-index: 2000; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .nav-item { color: #94a3b8; text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; }
+        .nav-item.active { color: #fff; transform: translateY(-5px); }
+        .nav-item b { font-size: 26px; display: block; }
+
+        .page { display: none; }
+        .page-active { display: block; animation: slideUp 0.5s ease; }
+        @keyframes slideUp { from {opacity:0; transform:translateY(30px)} to {opacity:1; transform:translateY(0)} }
+
+        .glass-box { background: #fff; padding: 25px; border-radius: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input, textarea, select { width: 100%; padding: 15px; margin: 8px 0; border: 2px solid #f1f5f9; border-radius: 15px; font-family: inherit; }
+
+        #order-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index: 3000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-card { background:#fff; width:92%; max-width:480px; padding:30px; border-radius:40px; }
     </style>
 </head>
 <body>
 
-<header>
-    <div style="font-weight:800; font-size:22px;">Bsk Home Needs</div>
-    <div id="user-info" style="font-size:11px; margin-top:5px; opacity:0.9;">Guest Mode</div>
-</header>
+<header><h2>BSK HOME NEEDS</h2></header>
 
-<div id="home" class="page active-page">
-    <div style="background:white; border-radius:15px; padding:5px 15px; display:flex; align-items:center; margin-bottom:20px;">
-        🔍 <input type="text" id="q" placeholder="Search daily needs..." oninput="doSearch()" style="border:none; margin-bottom:0; outline:none;">
-    </div>
-    <div id="list" class="grid">🛒 Refreshing Store...</div>
-</div>
-
-<div id="cart" class="page">
-    <div class="box">
-        <h2 style="margin-top:0;">My Basket 🛒</h2>
-        <div id="cart-content">Basket is empty.</div>
-        <hr style="margin:15px 0; border:0.5px solid #eee;">
-        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:18px;">
-            <span>Total Bill:</span><span id="total" style="color:var(--p);">₹0</span>
+<div class="container">
+    <div id="p-shop" class="page page-active">
+        <input type="text" placeholder="🔎 Search items..." oninput="doSearch(this.value)">
+        <div class="cat-scroll" id="category-bar">
+            <div class="cat-chip active" onclick="filterCat('All', this)">All Items</div>
+            <div class="cat-chip" onclick="filterCat('Unleash', this)">Unleash ⚡</div>
+            <div class="cat-chip" onclick="filterCat('Grocery', this)">Grocery</div>
+            <div class="cat-chip" onclick="filterCat('Home Care', this)">Home Care</div>
+            <div class="cat-chip" onclick="filterCat('Personal Care', this)">Personal Care</div>
         </div>
-        <br>
-        <button class="btn btn-direct" style="background:var(--ok); font-size:16px;" onclick="sendOrder()">Place Order 🚀</button>
+        <div id="main-grid" class="product-grid">Connecting...</div>
     </div>
 
-    <div class="box">
-        <h4 style="margin-top:0;">📜 Order History</h4>
-        <div id="user-history" style="max-height:250px; overflow:auto; font-size:12px;">Login to see previous orders.</div>
+    <div id="p-cart" class="page">
+        <div class="glass-box">
+            <h3>My Cart 🛒</h3>
+            <div id="cart-ui-list">Empty.</div>
+            <hr style="opacity:0.1; margin:20px 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <b>Total Bill:</b>
+                <h2 id="total-price-ui" style="color:var(--success); margin:0;">₹0</h2>
+            </div>
+            <button class="btn btn-buy" style="height:65px; margin-top:25px;" onclick="checkout('cart')">PLACE ORDER</button>
+        </div>
+    </div>
+
+    <div id="p-user" class="page">
+        <div class="glass-box">
+            <h3>My Profile 👤</h3>
+            <input type="text" id="u-name" placeholder="Name">
+            <input type="number" id="u-phone" placeholder="WhatsApp Number">
+            <textarea id="u-addr" placeholder="Full Address" rows="3"></textarea>
+            <button class="btn btn-buy" onclick="saveUser()">SAVE PROFILE</button>
+        </div>
+        <div class="glass-box" style="background:#000; color:#fff;">
+            <h4>Admin Access</h4>
+            <input type="password" id="admin-pin" placeholder="Enter PIN">
+            <button class="btn" style="background:var(--primary); color:#fff;" onclick="checkAdmin()">LOGIN</button>
+        </div>
+    </div>
+
+    <div id="p-admin" class="page">
+        <div class="glass-box">
+            <div style="display:flex; justify-content:space-between;"><h3>Admin Dashboard</h3> <button onclick="navigate('p-shop')" style="color:red; font-weight:900;">X</button></div>
+            
+            <label style="font-size:12px; font-weight:600;">Product Name</label>
+            <input type="text" id="ad-n" placeholder="e.g. Rice 5kg">
+            
+            <label style="font-size:12px; font-weight:600;">Product Price (₹)</label>
+            <input type="number" id="ad-p" placeholder="Price">
+            
+            <label style="font-size:12px; font-weight:600;">Delivery Charge (₹)</label>
+            <input type="number" id="ad-d" placeholder="Enter Delivery Charge (0 if free)" value="0">
+            
+            <label style="font-size:12px; font-weight:600;">Image URL</label>
+            <input type="text" id="ad-i" placeholder="URL Link">
+            
+            <label style="font-size:12px; font-weight:600;">Category</label>
+            <select id="ad-c">
+                <option value="General">General</option>
+                <option value="Unleash">Unleash</option>
+                <option value="Grocery">Grocery</option>
+                <option value="Home Care">Home Care</option>
+                <option value="Personal Care">Personal Care</option>
+            </select>
+            
+            <button class="btn btn-buy" style="margin-top:10px;" onclick="addProduct()">➕ ADD TO STORE</button>
+            <hr style="margin:25px 0;">
+            <h4>Manage Live Inventory (Unlist)</h4>
+            <div id="admin-inventory-list"></div>
+        </div>
     </div>
 </div>
 
-<div id="acc" class="page">
-    <div class="box">
-        <h3>User Profile 👤</h3>
-        <input type="text" id="un" placeholder="Enter Your Name">
-        <input type="number" id="up" placeholder="WhatsApp Number">
-        <button class="btn btn-direct" onclick="login()">Sync & Login</button>
-        <button class="btn" style="margin-top:10px; background:#fee2e2; color:#ef4444;" onclick="logout()">Logout</button>
+<div id="order-modal">
+    <div class="modal-card">
+        <h3>Order Confirmation ✅</h3>
+        <div id="summary-list" style="background:#f8fafc; padding:15px; border-radius:20px; margin-bottom:15px; max-height:150px; overflow-y:auto; font-size:12px;"></div>
+        <input type="text" id="fn" placeholder="Confirm Name">
+        <input type="number" id="fp" placeholder="Confirm WhatsApp">
+        <textarea id="fa" placeholder="Confirm Address" rows="2"></textarea>
+        <button class="btn btn-buy" style="height:60px;" onclick="sendToWA()">🚀 SEND TO WHATSAPP</button>
+        <button class="btn" style="background:none; color:red;" onclick="closeM()">CANCEL</button>
     </div>
-    <div class="box" style="background:#f3f4f6;">
-        <h4>Manager Access</h4>
-        <input type="password" id="pass" placeholder="Admin Key">
-        <button class="btn" style="background:#1f2937; color:white;" onclick="goAdmin()">Open Admin Panel</button>
-    </div>
-</div>
-
-<div id="admin" class="page">
-    <div class="box" style="background:var(--p); color:white; display:flex; text-align:center;">
-        <div style="flex:1">Products: <b id="stat-items">0</b></div>
-        <div style="flex:1">Orders: <b id="stat-orders">0</b></div>
-    </div>
-    
-    <div class="box">
-        <h4>➕ Add New Product</h4>
-        <input type="text" id="pn" placeholder="Product Name">
-        <input type="number" id="pp" placeholder="Price (₹)">
-        <input type="text" id="pi" placeholder="Image Link (URL)">
-        <button class="btn btn-direct" style="background:var(--ok);" onclick="addProd()">Save Product</button>
-    </div>
-
-    <div class="box"><h4>📦 Store Orders</h4><div id="adm-orders" style="max-height:300px; overflow:auto;"></div></div>
-    <button class="btn" style="background:#666; color:white;" onclick="show('home')">Back to Shop</button>
 </div>
 
 <nav>
-    <div class="nav-i active-nav" id="n-home" onclick="show('home')">🏠<br>Home</div>
-    <div class="nav-i" id="n-cart" onclick="show('cart')">🛒<br>Cart</div>
-    <div class="nav-i" id="n-acc" onclick="show('acc')">👤<br>Profile</div>
+    <div class="nav-item active" id="n-shop" onclick="navigate('p-shop', this)"><b>🏠</b>Store</div>
+    <div class="nav-item" id="n-cart" onclick="navigate('p-cart', this)"><b>🛒</b>Cart</div>
+    <div class="nav-item" id="n-user" onclick="navigate('p-user', this)"><b>👤</b>User</div>
 </nav>
 
 <script>
-    const S_URL = "https://lfxorgprrgpkkiqdjqdb.supabase.co";
-    const S_KEY = "sb_publishable_yyyMF6aEwhtYh4RHUFrIgA_OEU64IIX";
-    const _sb = supabase.createClient(S_URL, S_KEY);
+    const _sb = supabase.createClient("https://lfxorgprrgpkkiqdjqdb.supabase.co", "sb_publishable_yyyMF6aEwhtYh4RHUFrIgA_OEU64IIX");
+    let inventory = [], cart = [], curCheck = null;
 
-    let prods = []; 
-    let myCart = []; 
-    let currentUser = localStorage.getItem('bsk_phone') || null;
-
-    async function sync() {
+    async function init() {
         const { data } = await _sb.from('inventory').select('*').order('created_at', {ascending:false});
-        if(data) { prods = data; render(prods); document.getElementById('stat-items').innerText = prods.length; }
-        if(currentUser) {
-            document.getElementById('user-info').innerText = "Logged in: " + currentUser;
-            const { data: userData } = await _sb.from('user_data').select('cart_json').eq('phone', currentUser).single();
-            if(userData && userData.cart_json) myCart = JSON.parse(userData.cart_json);
-            loadHistory();
-        }
-        calc();
+        inventory = (data || []).map(p => ({...p, uq:1}));
+        renderStore(inventory);
+        loadLocal();
     }
 
-    function render(arr) {
-        document.getElementById('list').innerHTML = arr.map(p => `
-            <div class="card">
-                <img src="${p.image_url}" onerror="this.src='https://via.placeholder.com/150'">
-                <div style="font-weight:700; font-size:13px; margin:5px 0;">${p.name || p.Name}</div>
-                <div style="color:var(--ok); font-weight:800;">₹${p.price}</div>
-                <button class="btn btn-cart" onclick="addToCart(${p.id}, false)">Add to Cart</button>
-                <button class="btn btn-direct" onclick="addToCart(${p.id}, true)">Order Now</button>
+    function renderStore(list) {
+        document.getElementById('main-grid').innerHTML = list.map(p => `
+            <div class="p-card">
+                <div class="img-box"><img src="${p.image_url}"></div>
+                <div style="text-align:center;">
+                    <div style="font-weight:700; font-size:13px; margin:5px 0;">${p.name}<br><small style="color:var(--primary)">${p.category || 'General'}</small></div>
+                    <div style="color:var(--success); font-weight:900; font-size:22px;">₹${p.price}</div>
+                    <div style="font-size:10px; color:#666">+₹${p.delivery_charge || 0} Delivery</div>
+                </div>
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#f1f5f9; border-radius:15px; padding:5px; margin-bottom:8px;">
+                        <button style="width:35px; height:35px; border:none; background:#fff; border-radius:10px; font-weight:900;" onclick="updateQ(${p.id},-1)">-</button>
+                        <b id="qv-${p.id}">${p.uq}</b>
+                        <button style="width:35px; height:35px; border:none; background:#fff; border-radius:10px; font-weight:900;" onclick="updateQ(${p.id},1)">+</button>
+                    </div>
+                    <button class="btn btn-cart" onclick="addCart(${p.id})">Add Cart</button>
+                    <button class="btn btn-buy" onclick="checkout(${p.id})">Buy Now</button>
+                </div>
             </div>
         `).join('');
     }
 
-    async function addToCart(id, direct) {
-        if(!currentUser) return show('acc');
-        const existing = myCart.find(x => x.id === id);
-        if (existing) { existing.qty += 1; } 
-        else { const item = prods.find(x => x.id === id); myCart.push({...item, qty: 1}); }
-        await saveToCloud();
-        if(direct) show('cart');
-        else alert("Product added! Keep shopping.");
+    function updateQ(id, d) {
+        const p = inventory.find(x => x.id === id);
+        p.uq = Math.max(1, p.uq + d);
+        document.getElementById(`qv-${id}`).innerText = p.uq;
     }
 
-    async function saveToCloud() {
-        if(currentUser) {
-            await _sb.from('user_data').upsert({ 
-                phone: currentUser, 
-                name: localStorage.getItem('bsk_name'),
-                cart_json: JSON.stringify(myCart) 
+    function filterCat(cat, el) {
+        document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        const filtered = cat === 'All' ? inventory : inventory.filter(p => p.category === cat);
+        renderStore(filtered);
+    }
+
+    function addCart(id) {
+        const p = inventory.find(x => x.id === id);
+        const ex = cart.find(c => c.id === id);
+        if(ex) ex.fq += p.uq; else cart.push({...p, fq: p.uq});
+        updateCartUI();
+        alert("Added to cart!");
+    }
+
+    function updateCartUI() {
+        let total = 0; const ui = document.getElementById('cart-ui-list');
+        if(!cart.length) ui.innerHTML = "Empty.";
+        else {
+            ui.innerHTML = cart.map((c, i) => {
+                total += (c.price * c.fq) + (Number(c.delivery_charge) || 0);
+                return `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee;">
+                    <span><b>${c.name}</b> (x${c.fq})</span>
+                    <button onclick="remC(${i})" style="color:red; border:none; background:none; font-weight:900;">X</button>
+                </div>`;
+            }).join('');
+        }
+        document.getElementById('total-price-ui').innerText = "₹" + total;
+    }
+
+    function remC(i) { cart.splice(i, 1); updateCartUI(); }
+
+    function checkout(target) {
+        curCheck = target;
+        document.getElementById('fn').value = localStorage.getItem('un') || "";
+        document.getElementById('fp').value = localStorage.getItem('up') || "";
+        document.getElementById('fa').value = localStorage.getItem('ua') || "";
+        let sum = "";
+        if(target === 'cart') {
+            cart.forEach(i => sum += `• ${i.name} (x${i.fq})<br>`);
+        } else {
+            const p = inventory.find(x => x.id === target);
+            sum = `• ${p.name} (x${p.uq})`;
+        }
+        document.getElementById('summary-list').innerHTML = sum;
+        document.getElementById('order-modal').style.display = 'flex';
+    }
+
+    function sendToWA() {
+        const n = document.getElementById('fn').value, p = document.getElementById('fp').value, a = document.getElementById('fa').value;
+        if(!n || !p || !a) return alert("Fill details!");
+        localStorage.setItem('un', n); localStorage.setItem('up', p); localStorage.setItem('ua', a);
+        let listMsg = "", grandTotal = 0;
+        if(curCheck === 'cart') {
+            cart.forEach((item, idx) => {
+                let sub = (item.price * item.fq) + (Number(item.delivery_charge) || 0);
+                listMsg += `${idx+1}. *${item.name}*%0A   - Qty: ${item.fq}%0A   - Subtotal: ₹${sub}%0A%0A`;
+                grandTotal += sub;
             });
+            cart = []; updateCartUI();
+        } else {
+            const prod = inventory.find(x => x.id === curCheck);
+            grandTotal = (prod.price * prod.uq) + (Number(prod.delivery_charge) || 0);
+            listMsg = `1. *${prod.name}*%0A   - Qty: ${prod.uq}%0A   - Total: ₹${grandTotal}%0A%0A`;
         }
-        calc();
+        const msg = `📦 *NEW ORDER - BSK HOME NEEDS*%0A--------------------------------%0A👤 *Customer:* ${n}%0A📞 *WhatsApp:* ${p}%0A📍 *Address:* ${a}%0A--------------------------------%0A🛒 *ITEMS:*%0A%0A${listMsg}--------------------------------%0A💰 *GRAND TOTAL: ₹${grandTotal}*%0A--------------------------------`;
+        window.open(`https://api.whatsapp.com/send?phone=918011924700&text=${msg}`);
+        closeM();
     }
 
-    async function addProd(){
-        const n = document.getElementById('pn').value;
-        const p = document.getElementById('pp').value;
-        const i = document.getElementById('pi').value;
-        if(!n || !p) return alert("Please fill name and price!");
-
-        const { error } = await _sb.from('inventory').insert([{ name: n, price: parseInt(p), image_url: i }]);
-        if(!error) {
-            alert("Added! Add another product.");
-            // --- FORM RESET ---
-            document.getElementById('pn').value = "";
-            document.getElementById('pp').value = "";
-            document.getElementById('pi').value = "";
-            sync();
-        }
+    function navigate(id, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
+        document.getElementById(id).classList.add('page-active');
+        if(el) { document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); }
     }
 
-    async function sendOrder() {
-        if(!currentUser || myCart.length === 0) return alert("Cart is empty!");
-        const items = myCart.map(c => `${c.name} (x${c.qty})`).join(', ');
-        const total = document.getElementById('total').innerText;
-
-        const {error} = await _sb.from('orders').insert([{
-            customer_name: localStorage.getItem('bsk_name'),
-            phone: currentUser,
-            items: items,
-            total_price: total
-        }]);
-
-        if(!error) {
-            alert("Order Success! Cart reset.");
-            myCart = []; 
-            await saveToCloud();
-            loadHistory();
-            show('home');
-        }
+    function checkAdmin() { 
+        if(document.getElementById('admin-pin').value === "Bhashkar jyoti Roy") { navigate('p-admin'); loadAdminList(); } 
+        else alert("Wrong PIN!"); 
     }
 
-    function calc() {
-        let t=0; 
-        document.getElementById('cart-content').innerHTML = myCart.length ? myCart.map((c,i)=>{
-            const sub = c.price * c.qty; t += sub;
-            return `<div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-                <div style="flex:2; font-size:12px;"><b>${c.name}</b></div>
-                <div class="qty-box"><button class="qty-btn" onclick="updateQty(${i},-1)">-</button><span>${c.qty}</span><button class="qty-btn" onclick="updateQty(${i},1)">+</button></div>
-                <div style="flex:1; text-align:right;">₹${sub}</div>
-            </div>`;
-        }).join('') : "No items in basket.";
-        document.getElementById('total').innerText = "₹" + t;
+    async function addProduct() {
+        const n = document.getElementById('ad-n').value, p = document.getElementById('ad-p').value, i = document.getElementById('ad-i').value, d = document.getElementById('ad-d').value, c = document.getElementById('ad-c').value;
+        if(!n || !p) return alert("Enter Name and Price!");
+        await _sb.from('inventory').insert([{name:n, price:p, image_url:i, delivery_charge:d, category:c}]);
+        alert("Product Added!"); init(); loadAdminList();
     }
 
-    function updateQty(i, d) { myCart[i].qty += d; if(myCart[i].qty<1) myCart.splice(i,1); saveToCloud(); }
-
-    async function login() {
-        const n = document.getElementById('un').value;
-        const p = document.getElementById('up').value;
-        if(!n || !p) return alert("Name & Phone required!");
-        localStorage.setItem('bsk_name', n);
-        localStorage.setItem('bsk_phone', p);
-        currentUser = p;
-        sync();
-        show('home');
+    async function loadAdminList() {
+        const {data} = await _sb.from('inventory').select('*').order('created_at', {ascending:false});
+        document.getElementById('admin-inventory-list').innerHTML = data.map(d => `
+            <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #eee; background:#fff; margin-bottom:5px; border-radius:10px;">
+                <span><b>${d.name}</b> (₹${d.price} + ₹${d.delivery_charge})</span>
+                <button onclick="delP(${d.id})" style="color:var(--danger); border:none; background:none; font-weight:900;">UNLIST</button>
+            </div>
+        `).join('');
     }
 
-    function logout() { localStorage.clear(); location.reload(); }
-
-    async function loadHistory() {
-        const { data } = await _sb.from('orders').select('*').eq('phone', currentUser).order('created_at', {ascending:false});
-        if(data) document.getElementById('user-history').innerHTML = data.map(o => `<div style="background:#fff; padding:10px; border-radius:10px; margin-bottom:8px; border-left:4px solid var(--p);"><b>${o.items}</b><br><span>${o.total_price}</span></div>`).join('');
+    async function delP(id) { 
+        if(confirm("Delete this product?")) { await _sb.from('inventory').delete().eq('id', id); loadAdminList(); init(); } 
     }
 
-    function doSearch() { const v=document.getElementById('q').value.toLowerCase(); render(prods.filter(p=>(p.name||p.Name).toLowerCase().includes(v))); }
-    async function goAdmin() { if(document.getElementById('pass').value==="Bhashkar jyoti Roy") { show('admin'); fetchAdminOrders(); } }
-    async function fetchAdminOrders() {
-        const {data} = await _sb.from('orders').select('*').order('created_at',{ascending:false});
-        if(data) { document.getElementById('stat-orders').innerText=data.length; document.getElementById('adm-orders').innerHTML=data.map(o=>`<div style="background:white; padding:12px; margin-bottom:10px; border-radius:10px;"><b>${o.customer_name}</b> (${o.phone})<br>${o.items}<br><b>${o.total_price}</b></div>`).join(''); }
-    }
-    
-    function show(id) {
-        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active-page'));
-        document.getElementById(id).classList.add('active-page');
-        document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('active-nav'));
-        const navId = 'n-' + (id==='admin'?'acc':id);
-        if(document.getElementById(navId)) document.getElementById(navId).classList.add('active-nav');
-    }
-    window.onload = sync;
+    function doSearch(q) { renderStore(inventory.filter(i => i.name.toLowerCase().includes(q.toLowerCase()))); }
+    function closeM() { document.getElementById('order-modal').style.display = 'none'; }
+    function saveUser() { localStorage.setItem('un', document.getElementById('u-name').value); localStorage.setItem('up', document.getElementById('u-phone').value); localStorage.setItem('ua', document.getElementById('u-addr').value); alert("Saved!"); }
+    function loadLocal() { document.getElementById('u-name').value = localStorage.getItem('un') || ""; document.getElementById('u-phone').value = localStorage.getItem('up') || ""; document.getElementById('u-addr').value = localStorage.getItem('ua') || ""; }
+    window.onload = init;
 </script>
 </body>
 </html>

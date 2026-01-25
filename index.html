@@ -3,90 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bsk Home Needs - Final Fix</title>
+    <title>Bsk Home Needs | Pro Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --p: #1a73e8; --s: #fb641b; --ok: #2e7d32; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); padding-bottom: 90px; }
-        header { background: var(--p); color: white; padding: 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .search-bar { background: white; border-radius: 8px; margin-top: 10px; padding: 8px; display: flex; align-items: center; }
-        .search-bar input { border: none; width: 100%; outline: none; padding-left: 10px; font-size: 14px; }
-        .page { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
+        :root { 
+            --p: #4f46e5; --s: #f43f5e; --ok: #10b981; --cart-btn: #fbbf24;
+            --glass: rgba(255, 255, 255, 0.95);
+            --grad: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; margin: 0; 
+            background: var(--grad); background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #1f2937; padding-bottom: 90px; min-height: 100vh;
+        }
+
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        header { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); color: white; padding: 20px 15px; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.3); text-align: center; }
+        
+        .page { display: none; padding: 20px; animation: slideUp 0.4s ease; }
         .active-page { display: block !important; }
-        .box { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #eee; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: white; padding: 10px; border-radius: 15px; text-align: center; border: 1px solid #eee; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .card img { width: 100%; height: 110px; object-fit: cover; border-radius: 10px; background: #f9f9f9; }
-        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        .btn { background: var(--p); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); }
-        nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 1px solid #eee; z-index: 1001; }
-        .nav-i { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; color: #666; cursor: pointer; }
+
+        .box { background: var(--glass); border-radius: 24px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: white; border-radius: 20px; padding: 12px; text-align: center; }
+        .card img { width: 100%; height: 110px; object-fit: cover; border-radius: 15px; }
+        
+        .btn { border: none; padding: 12px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-cart { background: var(--cart-btn); color: #92400e; margin-bottom: 8px; }
+        .btn-direct { background: var(--p); color: white; }
+        
+        input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-family: inherit; }
+
+        .qty-box { display: flex; align-items: center; justify-content: space-around; background: #f3f4f6; border-radius: 10px; padding: 5px; }
+        .qty-btn { background: white; border: 1px solid #ddd; width: 28px; height: 28px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
+        nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 80px; border-top: 1px solid #eee; z-index: 1001; }
+        .nav-i { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; color: #6b7280; }
         .active-nav { color: var(--p); font-weight: bold; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight:800; font-size:20px; letter-spacing: 0.5px;">Bsk Home Need's</div>
-    <div class="search-bar">🔍 <input type="text" id="q" placeholder="Search for products..." oninput="doSearch()"></div>
+    <div style="font-weight:800; font-size:22px;">Bsk Home Needs</div>
+    <div id="user-info" style="font-size:11px; margin-top:5px; opacity:0.9;">Guest Mode</div>
 </header>
 
 <div id="home" class="page active-page">
-    <div id="list" class="grid">Searching for products in Cloud...</div>
+    <div style="background:white; border-radius:15px; padding:5px 15px; display:flex; align-items:center; margin-bottom:20px;">
+        🔍 <input type="text" id="q" placeholder="Search daily needs..." oninput="doSearch()" style="border:none; margin-bottom:0; outline:none;">
+    </div>
+    <div id="list" class="grid">🛒 Refreshing Store...</div>
 </div>
 
 <div id="cart" class="page">
     <div class="box">
-        <h3 style="margin-top:0;">My Basket 🛒</h3>
-        <div id="cart-content" style="min-height: 50px; font-size: 14px; color: #555;">Basket is empty</div>
-        <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-        <h4 id="total" style="margin:0; font-size: 18px;">Total: ₹0</h4>
+        <h2 style="margin-top:0;">My Basket 🛒</h2>
+        <div id="cart-content">Basket is empty.</div>
+        <hr style="margin:15px 0; border:0.5px solid #eee;">
+        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:18px;">
+            <span>Total Bill:</span><span id="total" style="color:var(--p);">₹0</span>
+        </div>
         <br>
-        <input type="text" id="addr" placeholder="Enter Delivery Address">
-        <button class="btn" style="background:var(--ok);" onclick="sendOrder()">Confirm & Order</button>
+        <button class="btn btn-direct" style="background:var(--ok); font-size:16px;" onclick="sendOrder()">Place Order 🚀</button>
+    </div>
+
+    <div class="box">
+        <h4 style="margin-top:0;">📜 Order History</h4>
+        <div id="user-history" style="max-height:250px; overflow:auto; font-size:12px;">Login to see previous orders.</div>
     </div>
 </div>
 
 <div id="acc" class="page">
     <div class="box">
-        <h4>User Profile</h4>
-        <input type="text" id="un" placeholder="Your Name">
-        <input type="number" id="up" placeholder="Phone Number">
-        <button class="btn" onclick="saveMe()">Update Profile</button>
+        <h3>User Profile 👤</h3>
+        <input type="text" id="un" placeholder="Enter Your Name">
+        <input type="number" id="up" placeholder="WhatsApp Number">
+        <button class="btn btn-direct" onclick="login()">Sync & Login</button>
+        <button class="btn" style="margin-top:10px; background:#fee2e2; color:#ef4444;" onclick="logout()">Logout</button>
     </div>
-    <div class="box" style="background:#f8f9fa;">
-        <h4>Admin Panel</h4>
-        <input type="password" id="pass" placeholder="Enter Admin Password">
-        <button class="btn" style="background:#333" onclick="goAdmin()">Login as Manager</button>
+    <div class="box" style="background:#f3f4f6;">
+        <h4>Manager Access</h4>
+        <input type="password" id="pass" placeholder="Admin Key">
+        <button class="btn" style="background:#1f2937; color:white;" onclick="goAdmin()">Open Admin Panel</button>
     </div>
 </div>
 
 <div id="admin" class="page">
+    <div class="box" style="background:var(--p); color:white; display:flex; text-align:center;">
+        <div style="flex:1">Products: <b id="stat-items">0</b></div>
+        <div style="flex:1">Orders: <b id="stat-orders">0</b></div>
+    </div>
+    
     <div class="box">
-        <h4>➕ Add New Item</h4>
-        <input type="text" id="pn" placeholder="Item Name">
+        <h4>➕ Add New Product</h4>
+        <input type="text" id="pn" placeholder="Product Name">
         <input type="number" id="pp" placeholder="Price (₹)">
-        <input type="number" id="ps" placeholder="Delivery Charge (₹)">
         <input type="text" id="pi" placeholder="Image Link (URL)">
-        <button class="btn" style="background:var(--ok)" onclick="addProd()">UPLOAD TO STORE</button>
+        <button class="btn btn-direct" style="background:var(--ok);" onclick="addProd()">Save Product</button>
     </div>
-    <div class="box">
-        <h4>📦 Recent Orders</h4>
-        <div id="adm-orders" style="max-height: 200px; overflow: auto; font-size: 12px;">No orders yet.</div>
-    </div>
-    <div class="box">
-        <h4>🛠 Inventory Management</h4>
-        <div id="adm-inv" style="max-height: 200px; overflow: auto;"></div>
-    </div>
-    <button class="btn" style="background:#666; margin-bottom: 20px;" onclick="show('acc')">Back to Account</button>
+
+    <div class="box"><h4>📦 Store Orders</h4><div id="adm-orders" style="max-height:300px; overflow:auto;"></div></div>
+    <button class="btn" style="background:#666; color:white;" onclick="show('home')">Back to Shop</button>
 </div>
 
 <nav>
     <div class="nav-i active-nav" id="n-home" onclick="show('home')">🏠<br>Home</div>
     <div class="nav-i" id="n-cart" onclick="show('cart')">🛒<br>Cart</div>
-    <div class="nav-i" id="n-acc" onclick="show('acc')">👤<br>Account</div>
+    <div class="nav-i" id="n-acc" onclick="show('acc')">👤<br>Profile</div>
 </nav>
 
 <script>
@@ -94,179 +123,143 @@
     const S_KEY = "sb_publishable_yyyMF6aEwhtYh4RHUFrIgA_OEU64IIX";
     const _sb = supabase.createClient(S_URL, S_KEY);
 
-    let prods = [];
-    let myCart = [];
+    let prods = []; 
+    let myCart = []; 
+    let currentUser = localStorage.getItem('bsk_phone') || null;
 
-    // --- SMART SYNC (The Fix) ---
     async function sync() {
-        const { data, error } = await _sb.from('inventory').select('*').order('created_at', {ascending:false});
-        if (error) {
-            document.getElementById('list').innerHTML = "Cloud Error: " + error.message;
-            return;
+        const { data } = await _sb.from('inventory').select('*').order('created_at', {ascending:false});
+        if(data) { prods = data; render(prods); document.getElementById('stat-items').innerText = prods.length; }
+        if(currentUser) {
+            document.getElementById('user-info').innerText = "Logged in: " + currentUser;
+            const { data: userData } = await _sb.from('user_data').select('cart_json').eq('phone', currentUser).single();
+            if(userData && userData.cart_json) myCart = JSON.parse(userData.cart_json);
+            loadHistory();
         }
-        if (data) {
-            prods = data;
-            render(prods);
-            updateAdm();
-        }
-    }
-
-    function render(arr) {
-        const grid = document.getElementById('list');
-        if (arr.length === 0) {
-            grid.innerHTML = "<div style='grid-column: 1/3; text-align:center; padding:20px;'>No items found in your cloud database. Go to Admin and add some!</div>";
-            return;
-        }
-
-        grid.innerHTML = arr.map(p => {
-            // Smart property detection
-            const name = p.name || p.Name || "Item";
-            const price = p.price || p.Price || 0;
-            const img = p.image_url || p.Image || 'https://via.placeholder.com/150';
-            const ship = p.delivery_charge || 0;
-
-            return `
-                <div class="card">
-                    <img src="${img}" onerror="this.src='https://via.placeholder.com/150'">
-                    <div style="font-weight:bold; margin:8px 0 2px; font-size:14px; color:#333;">${name}</div>
-                    <div style="color:var(--ok); font-weight:bold; font-size:16px;">₹${price}</div>
-                    <div style="font-size:10px; color:#999; margin-bottom:5px;">+ ₹${ship} Delivery</div>
-                    <button onclick="buy(${p.id})" style="background:var(--s); border:none; color:white; padding:8px; border-radius:8px; width:100%; cursor:pointer; font-weight:bold;">Add to Basket</button>
-                </div>
-            `;
-        }).join('');
-    }
-
-    // --- ADMIN LOGIC ---
-    async function addProd() {
-        const n = document.getElementById('pn').value;
-        const p = document.getElementById('pp').value;
-        const s = document.getElementById('ps').value;
-        const i = document.getElementById('pi').value;
-
-        if(!n || !p) return alert("Please enter Name and Price!");
-
-        const { error } = await _sb.from('inventory').insert([{ 
-            name: n, 
-            price: parseInt(p), 
-            delivery_charge: parseInt(s || 0), 
-            image_url: i 
-        }]);
-
-        if (error) alert("Admin Error: " + error.message);
-        else {
-            alert("Success! Item is now Live.");
-            document.getElementById('pn').value = '';
-            document.getElementById('pp').value = '';
-            sync(); // Reload list
-        }
-    }
-
-    function buy(id) {
-        const item = prods.find(x => x.id === id);
-        myCart.push(item);
-        alert((item.name || item.Name) + " added to basket!");
         calc();
     }
 
-    function calc() {
-        let t = 0;
-        const content = document.getElementById('cart-content');
-        if(myCart.length === 0) { content.innerHTML = "Basket is empty"; document.getElementById('total').innerText = "Total: ₹0"; return; }
-        
-        content.innerHTML = myCart.map((c, index) => {
-            const price = parseInt(c.price || c.Price || 0);
-            const ship = parseInt(c.delivery_charge || 0);
-            t += (price + ship);
-            return `<div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #f9f9f9; padding-bottom:5px;">
-                        <span>${c.name || c.Name}</span>
-                        <span>₹${price} <span onclick="rem(${index})" style="color:red; margin-left:10px; cursor:pointer; font-weight:bold;">✕</span></span>
-                    </div>`;
-        }).join('');
-        document.getElementById('total').innerText = "Total: ₹" + t;
-    }
-
-    function rem(idx) { myCart.splice(idx, 1); calc(); }
-
-    async function sendOrder() {
-        const adr = document.getElementById('addr').value;
-        const un = localStorage.getItem('bsk_n');
-        if(!un || !adr || myCart.length === 0) return alert("Profile, Address, or Basket is empty!");
-
-        const { error } = await _sb.from('orders').insert([{
-            customer_name: un, 
-            phone: localStorage.getItem('bsk_p'), 
-            address: adr, 
-            items: myCart.map(c => c.name || c.Name).join(', '), 
-            total_price: document.getElementById('total').innerText
-        }]);
-
-        if(!error) { alert("Order Placed! Thank you."); myCart = []; calc(); show('home'); }
-        else alert("Order Failed: " + error.message);
-    }
-
-    function doSearch() {
-        const val = document.getElementById('q').value.toLowerCase();
-        const res = prods.filter(p => (p.name || p.Name || "").toLowerCase().includes(val));
-        render(res);
-    }
-
-    function goAdmin() {
-        if(document.getElementById('pass').value === "Bhashkar jyoti Roy") {
-            show('admin');
-            fetchOrders();
-        } else alert("Invalid Password!");
-    }
-
-    async function fetchOrders() {
-        const { data } = await _sb.from('orders').select('*').order('created_at', {ascending:false});
-        if(data) {
-            document.getElementById('adm-orders').innerHTML = data.map(o => `
-                <div style="background:#f1f3f5; padding:10px; border-radius:10px; margin-bottom:10px; border:1px solid #dee2e6;">
-                    <b>${o.customer_name}</b> (${o.phone})<br>
-                    <span style="color:#555;">Items: ${o.items}</span><br>
-                    <small>Addr: ${o.address}</small><br>
-                    <b>${o.total_price}</b>
-                </div>
-            `).join('') || "No orders found.";
-        }
-    }
-
-    function updateAdm() {
-        document.getElementById('adm-inv').innerHTML = prods.map(p => `
-            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding:10px; align-items:center;">
-                <span style="font-size:13px;">${p.name || p.Name}</span>
-                <button onclick="del(${p.id})" style="color:white; border:none; background:#ff4d4d; padding:4px 8px; border-radius:4px; font-size:10px;">Delete</button>
+    function render(arr) {
+        document.getElementById('list').innerHTML = arr.map(p => `
+            <div class="card">
+                <img src="${p.image_url}" onerror="this.src='https://via.placeholder.com/150'">
+                <div style="font-weight:700; font-size:13px; margin:5px 0;">${p.name || p.Name}</div>
+                <div style="color:var(--ok); font-weight:800;">₹${p.price}</div>
+                <button class="btn btn-cart" onclick="addToCart(${p.id}, false)">Add to Cart</button>
+                <button class="btn btn-direct" onclick="addToCart(${p.id}, true)">Order Now</button>
             </div>
         `).join('');
     }
 
-    async function del(id) {
-        if(confirm("Permanently delete this item?")) { 
-            const { error } = await _sb.from('inventory').delete().eq('id', id); 
-            if(!error) sync(); 
+    async function addToCart(id, direct) {
+        if(!currentUser) return show('acc');
+        const existing = myCart.find(x => x.id === id);
+        if (existing) { existing.qty += 1; } 
+        else { const item = prods.find(x => x.id === id); myCart.push({...item, qty: 1}); }
+        await saveToCloud();
+        if(direct) show('cart');
+        else alert("Product added! Keep shopping.");
+    }
+
+    async function saveToCloud() {
+        if(currentUser) {
+            await _sb.from('user_data').upsert({ 
+                phone: currentUser, 
+                name: localStorage.getItem('bsk_name'),
+                cart_json: JSON.stringify(myCart) 
+            });
+        }
+        calc();
+    }
+
+    async function addProd(){
+        const n = document.getElementById('pn').value;
+        const p = document.getElementById('pp').value;
+        const i = document.getElementById('pi').value;
+        if(!n || !p) return alert("Please fill name and price!");
+
+        const { error } = await _sb.from('inventory').insert([{ name: n, price: parseInt(p), image_url: i }]);
+        if(!error) {
+            alert("Added! Add another product.");
+            // --- FORM RESET ---
+            document.getElementById('pn').value = "";
+            document.getElementById('pp').value = "";
+            document.getElementById('pi').value = "";
+            sync();
         }
     }
 
-    function saveMe() {
-        localStorage.setItem('bsk_n', document.getElementById('un').value);
-        localStorage.setItem('bsk_p', document.getElementById('up').value);
-        alert("Profile Updated!");
+    async function sendOrder() {
+        if(!currentUser || myCart.length === 0) return alert("Cart is empty!");
+        const items = myCart.map(c => `${c.name} (x${c.qty})`).join(', ');
+        const total = document.getElementById('total').innerText;
+
+        const {error} = await _sb.from('orders').insert([{
+            customer_name: localStorage.getItem('bsk_name'),
+            phone: currentUser,
+            items: items,
+            total_price: total
+        }]);
+
+        if(!error) {
+            alert("Order Success! Cart reset.");
+            myCart = []; 
+            await saveToCloud();
+            loadHistory();
+            show('home');
+        }
     }
 
+    function calc() {
+        let t=0; 
+        document.getElementById('cart-content').innerHTML = myCart.length ? myCart.map((c,i)=>{
+            const sub = c.price * c.qty; t += sub;
+            return `<div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
+                <div style="flex:2; font-size:12px;"><b>${c.name}</b></div>
+                <div class="qty-box"><button class="qty-btn" onclick="updateQty(${i},-1)">-</button><span>${c.qty}</span><button class="qty-btn" onclick="updateQty(${i},1)">+</button></div>
+                <div style="flex:1; text-align:right;">₹${sub}</div>
+            </div>`;
+        }).join('') : "No items in basket.";
+        document.getElementById('total').innerText = "₹" + t;
+    }
+
+    function updateQty(i, d) { myCart[i].qty += d; if(myCart[i].qty<1) myCart.splice(i,1); saveToCloud(); }
+
+    async function login() {
+        const n = document.getElementById('un').value;
+        const p = document.getElementById('up').value;
+        if(!n || !p) return alert("Name & Phone required!");
+        localStorage.setItem('bsk_name', n);
+        localStorage.setItem('bsk_phone', p);
+        currentUser = p;
+        sync();
+        show('home');
+    }
+
+    function logout() { localStorage.clear(); location.reload(); }
+
+    async function loadHistory() {
+        const { data } = await _sb.from('orders').select('*').eq('phone', currentUser).order('created_at', {ascending:false});
+        if(data) document.getElementById('user-history').innerHTML = data.map(o => `<div style="background:#fff; padding:10px; border-radius:10px; margin-bottom:8px; border-left:4px solid var(--p);"><b>${o.items}</b><br><span>${o.total_price}</span></div>`).join('');
+    }
+
+    function doSearch() { const v=document.getElementById('q').value.toLowerCase(); render(prods.filter(p=>(p.name||p.Name).toLowerCase().includes(v))); }
+    async function goAdmin() { if(document.getElementById('pass').value==="Bhashkar jyoti Roy") { show('admin'); fetchAdminOrders(); } }
+    async function fetchAdminOrders() {
+        const {data} = await _sb.from('orders').select('*').order('created_at',{ascending:false});
+        if(data) { document.getElementById('stat-orders').innerText=data.length; document.getElementById('adm-orders').innerHTML=data.map(o=>`<div style="background:white; padding:12px; margin-bottom:10px; border-radius:10px;"><b>${o.customer_name}</b> (${o.phone})<br>${o.items}<br><b>${o.total_price}</b></div>`).join(''); }
+    }
+    
     function show(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active-page'));
         document.getElementById(id).classList.add('active-page');
-        document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active-nav'));
-        const navId = 'n-' + id;
+        document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('active-nav'));
+        const navId = 'n-' + (id==='admin'?'acc':id);
         if(document.getElementById(navId)) document.getElementById(navId).classList.add('active-nav');
     }
-
-    window.onload = () => {
-        document.getElementById('un').value = localStorage.getItem('bsk_n') || "";
-        document.getElementById('up').value = localStorage.getItem('bsk_p') || "";
-        sync();
-    };
+    window.onload = sync;
 </script>
 </body>
 </html>
+
+    
